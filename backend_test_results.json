@@ -1,0 +1,64 @@
+{
+  "summary": {
+    "tests_run": 9,
+    "tests_passed": 9,
+    "success_rate": 100.0
+  },
+  "results": [
+    {
+      "test": "Root API Endpoint",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2025-12-01T18:50:19.626161"
+    },
+    {
+      "test": "User Registration",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2025-12-01T18:50:19.906747"
+    },
+    {
+      "test": "Verify Token (Get Me)",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2025-12-01T18:50:19.946308"
+    },
+    {
+      "test": "Create Service Order",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2025-12-01T18:50:20.035692"
+    },
+    {
+      "test": "Get All Service Orders",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2025-12-01T18:50:20.077366"
+    },
+    {
+      "test": "Get Single Service Order",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2025-12-01T18:50:20.116946"
+    },
+    {
+      "test": "Update Service Order",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2025-12-01T18:50:20.156219"
+    },
+    {
+      "test": "OCR Image Processing",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2025-12-01T18:50:23.029089"
+    },
+    {
+      "test": "Delete Service Order",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2025-12-01T18:50:23.063262"
+    }
+  ],
+  "timestamp": "2025-12-01T18:50:23.064097"
+}
