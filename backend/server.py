@@ -203,9 +203,10 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
 # ============ OCR FUNCTION ============
 
 async def extract_text_from_image(image_base64: str) -> dict:
-    """Extract text from image using OpenAI GPT-5.1 Vision"""
+    """Extract text from image and structure it for service order form"""
     try:
         from emergentintegrations.llm.chat import LlmChat, UserMessage, ImageContent
+        import json
         
         api_key = os.environ.get('EMERGENT_LLM_KEY')
         if not api_key:
@@ -215,7 +216,31 @@ async def extract_text_from_image(image_base64: str) -> dict:
         chat = LlmChat(
             api_key=api_key,
             session_id=str(uuid.uuid4()),
-            system_message="You are an OCR assistant. Extract all visible text from images, especially serial numbers, equipment information, and service order details. Return the extracted text in a structured format."
+            system_message="""You are an intelligent OCR assistant specialized in extracting service order information from images.
+Extract all visible information and return it in a structured JSON format that matches these exact field names:
+{
+  "ticket_number": "número do chamado",
+  "os_number": "número da O.S.",
+  "pat": "código PAT se presente",
+  "opening_date": "data de abertura (formato: DD/MM/YYYY ou DD/MM)",
+  "responsible_opening": "nome do responsável pela abertura",
+  "responsible_tech": "nome do técnico responsável",
+  "phone": "telefone",
+  "client_name": "nome do cliente",
+  "unit": "unidade/local",
+  "service_address": "endereço completo de atendimento",
+  "equipment_serial": "número de série do equipamento (S/N EQUIP)",
+  "equipment_board_serial": "número de série da placa (S/N PLACA)",
+  "equipment_type": "tipo de equipamento (IMPRESSORA, etc)",
+  "equipment_brand": "marca do equipamento",
+  "equipment_model": "modelo do equipamento",
+  "call_info": "descrição do problema/chamado",
+  "materials": "materiais utilizados",
+  "technical_report": "laudo técnico",
+  "total_page_count": "contador de páginas",
+  "observations": "observações gerais"
+}
+Return ONLY valid JSON. If a field is not found, use null."""
         ).with_model("openai", "gpt-5.1")
         
         # Create image content
@@ -223,16 +248,46 @@ async def extract_text_from_image(image_base64: str) -> dict:
         
         # Create message
         user_message = UserMessage(
-            text="Extract all text from this image. Pay special attention to: serial numbers (S/N), equipment numbers, dates, names, addresses, and any equipment verification information. Return the information in a clear, structured format.",
+            text="""Analyze this service order image and extract ALL visible information. 
+Pay special attention to:
+- Números (chamado, O.S., PAT)
+- Datas (abertura, próxima visita)
+- Nomes (responsáveis, técnico, cliente)
+- Equipamento (marca, modelo, números de série da placa e equipamento)
+- Endereço completo
+- Descrição do problema
+- Materiais utilizados
+
+Return the data in the exact JSON format specified in the system message. Be precise and extract everything visible.""",
             file_contents=[image_content]
         )
         
         # Send message and get response
         response = await chat.send_message(user_message)
         
+        # Try to parse JSON from response
+        try:
+            # Clean response - remove markdown code blocks if present
+            cleaned_response = response.strip()
+            if cleaned_response.startswith("```"):
+                # Remove ```json or ``` from start
+                cleaned_response = cleaned_response.split("\\n", 1)[1]
+            if cleaned_response.endswith("```"):
+                # Remove ``` from end
+                cleaned_response = cleaned_response.rsplit("\\n", 1)[0]
+            
+            structured_data = json.loads(cleaned_response)
+        except json.JSONDecodeError:
+            # If JSON parsing fails, return raw text
+            logging.warning(f"Could not parse JSON from OCR response: {response}")
+            structured_data = {
+                "raw_ocr": response,
+                "parse_error": True
+            }
+        
         return {
             "extracted_text": response,
-            "structured_data": {"raw_ocr": response}
+            "structured_data": structured_data
         }
     except Exception as e:
         logging.error(f"OCR Error: {str(e)}")
