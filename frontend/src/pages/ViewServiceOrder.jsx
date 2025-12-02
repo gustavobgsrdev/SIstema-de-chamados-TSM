@@ -91,178 +91,192 @@ const ViewServiceOrder = () => {
         </div>
       </header>
 
-      {/* Print Content */}
+      {/* Print Content - Excel Layout */}
       <main className="container mx-auto px-6 py-8" data-testid="order-content">
-        <div className="bg-white rounded-xl shadow-sm p-8 print:shadow-none print:rounded-none">
-          {/* Header for print */}
-          <div className="mb-8 pb-6 border-b border-slate-200">
-            <h1 className="text-3xl font-bold text-slate-800 mb-2">ORDEM DE SERVIÇO</h1>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="font-semibold">Nº O.S.:</span> {order.os_number || "N/A"}
+        <div className="bg-white print-container" style={{ maxWidth: '210mm', margin: '0 auto', padding: '10mm', fontSize: '10pt' }}>
+          
+          {/* Header with Logo */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '15px', borderBottom: '2px solid #000', paddingBottom: '10px' }}>
+            <div>
+              <h1 style={{ fontSize: '20pt', fontWeight: 'bold', margin: 0, color: '#1e40af' }}>TSM PRINTER SOLUTIONS</h1>
+              <p style={{ fontSize: '9pt', margin: '2px 0', color: '#64748b' }}>Soluções em Impressão e Manutenção</p>
+            </div>
+            <div style={{ textAlign: 'right', fontSize: '8pt' }}>
+              <p style={{ margin: '2px 0' }}><strong>Contato:</strong></p>
+              <p style={{ margin: '2px 0' }}>21 99637-4664</p>
+              <p style={{ margin: '2px 0' }}>21 3758-5168</p>
+            </div>
+          </div>
+
+          {/* Title */}
+          <h2 style={{ textAlign: 'center', fontSize: '14pt', fontWeight: 'bold', margin: '10px 0', textTransform: 'uppercase' }}>ORDEM DE SERVIÇO</h2>
+
+          {/* Main Info Table */}
+          <table className="print-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8.5pt', marginBottom: '8px' }}>
+            <tbody>
+              <tr>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', width: '20%', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>Responsável Abertura</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', width: '30%' }}>{order.responsible_opening || ''}</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', width: '15%', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>Nº Chamado</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', width: '35%' }}>{order.ticket_number || ''}</td>
+              </tr>
+              <tr>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>Nº da O.S.</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px' }}>{order.os_number || ''}</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>PAT</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px' }}>{order.pat || ''}</td>
+              </tr>
+              <tr>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>Data Abertura</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px' }}>{order.opening_date || ''}</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>Responsável Técnico</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px' }}>{order.responsible_tech || ''}</td>
+              </tr>
+              <tr>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>Telefone</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px' }} colSpan="3">{order.phone || ''}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          {/* Client Info */}
+          <table className="print-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8.5pt', marginBottom: '8px' }}>
+            <tbody>
+              <tr>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', width: '20%', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>Cliente</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', width: '30%' }}>{order.client_name || ''}</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', width: '15%', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>Unidade</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', width: '35%' }}>{order.unit || ''}</td>
+              </tr>
+              <tr>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>Endereço</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px' }} colSpan="3">{order.service_address || ''}</td>
+              </tr>
+              <tr>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>Observações</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', minHeight: '30px' }} colSpan="3">{order.observations || ''}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          {/* Equipment Info */}
+          <h3 style={{ fontSize: '10pt', fontWeight: 'bold', margin: '8px 0 4px 0', textTransform: 'uppercase' }}>Informações do Equipamento</h3>
+          <table className="print-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8.5pt', marginBottom: '8px' }}>
+            <tbody>
+              <tr>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', width: '20%', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>S/N Placa</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', width: '30%' }}>{order.equipment_board_serial || ''}</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', width: '20%', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>S/N Equipamento</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', width: '30%' }}>{order.equipment_serial || ''}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          {/* Call Info */}
+          <h3 style={{ fontSize: '10pt', fontWeight: 'bold', margin: '8px 0 4px 0', textTransform: 'uppercase' }}>Informações do Chamado</h3>
+          <table className="print-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8.5pt', marginBottom: '8px' }}>
+            <tbody>
+              <tr>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', minHeight: '40px', verticalAlign: 'top' }}>{order.call_info || ''}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          {/* Materials */}
+          <h3 style={{ fontSize: '10pt', fontWeight: 'bold', margin: '8px 0 4px 0', textTransform: 'uppercase' }}>Materiais / Laudo Técnico</h3>
+          <table className="print-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8.5pt', marginBottom: '8px' }}>
+            <tbody>
+              <tr>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', minHeight: '35px', verticalAlign: 'top' }}>
+                  {order.materials && <div><strong>Materiais:</strong> {order.materials}</div>}
+                  {order.technical_report && <div style={{ marginTop: '4px' }}><strong>Laudo:</strong> {order.technical_report}</div>}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          {/* Verifications */}
+          <h3 style={{ fontSize: '10pt', fontWeight: 'bold', margin: '8px 0 4px 0', textTransform: 'uppercase' }}>Verificações</h3>
+          <table className="print-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '7.5pt', marginBottom: '8px' }}>
+            <thead>
+              <tr>
+                <th style={{ border: '1px solid #000', padding: '3px 5px', backgroundColor: '#cbd5e1', textAlign: 'left' }}>Item Verificado</th>
+                <th style={{ border: '1px solid #000', padding: '3px 5px', backgroundColor: '#cbd5e1', width: '15%', textAlign: 'center' }}>Situação</th>
+                <th style={{ border: '1px solid #000', padding: '3px 5px', backgroundColor: '#cbd5e1', width: '30%', textAlign: 'left' }}>Observações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {order.verifications && order.verifications.length > 0 ? (
+                order.verifications.map((verification, index) => (
+                  <tr key={index}>
+                    <td style={{ border: '1px solid #000', padding: '2px 5px', fontSize: '7pt' }}>{verification.item}</td>
+                    <td style={{ border: '1px solid #000', padding: '2px 5px', textAlign: 'center' }}>
+                      <span style={{
+                        display: 'inline-block',
+                        padding: '1px 6px',
+                        borderRadius: '3px',
+                        fontSize: '7pt',
+                        fontWeight: 'bold',
+                        backgroundColor: verification.status === 'BOA' ? '#d1fae5' : verification.status === 'RUIM' ? '#fee2e2' : '#f1f5f9',
+                        color: verification.status === 'BOA' ? '#065f46' : verification.status === 'RUIM' ? '#991b1b' : '#475569'
+                      }}>
+                        {verification.status}
+                      </span>
+                    </td>
+                    <td style={{ border: '1px solid #000', padding: '2px 5px', fontSize: '7pt' }}>{verification.observation || ''}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="3" style={{ border: '1px solid #000', padding: '8px', textAlign: 'center', color: '#64748b' }}>Nenhuma verificação registrada</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+
+          {/* Final Info */}
+          <table className="print-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8.5pt', marginBottom: '8px' }}>
+            <tbody>
+              <tr>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', width: '25%', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>Contador Total Páginas</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', width: '25%' }}>{order.total_page_count || ''}</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', width: '25%', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>Próxima Visita</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', width: '25%' }}>{order.next_visit || ''}</td>
+              </tr>
+              <tr>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>Pendências</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px' }} colSpan="3">{order.pending_issues || ''}</td>
+              </tr>
+              <tr>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>Equipamento Trocado</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px' }} colSpan="3">{order.equipment_replaced ? 'SIM' : 'NÃO'}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          {/* Declaration */}
+          <div style={{ fontSize: '7.5pt', textAlign: 'justify', margin: '8px 0', padding: '5px', backgroundColor: '#f8fafc', border: '1px solid #cbd5e1' }}>
+            <p style={{ margin: 0 }}><strong>Declaração:</strong> Atesto que os serviços relacionados acima foram executados. Equipamento testado dentro e fora do sistema, funcionando perfeitamente.</p>
+          </div>
+
+          {/* Signatures */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '20px' }}>
+            <div>
+              <div style={{ borderTop: '1px solid #000', paddingTop: '5px', marginTop: '40px', textAlign: 'center' }}>
+                <p style={{ margin: 0, fontSize: '8pt', fontWeight: 'bold' }}>Assinatura do Técnico</p>
+                <p style={{ margin: '2px 0', fontSize: '7pt', color: '#64748b' }}>{order.responsible_tech || ''}</p>
+                <p style={{ margin: '2px 0', fontSize: '7pt', color: '#64748b' }}>Data: ___/___/______</p>
               </div>
-              <div>
-                <span className="font-semibold">Nº Chamado:</span> {order.ticket_number || "N/A"}
-              </div>
-              <div>
-                <span className="font-semibold">Data Abertura:</span> {order.opening_date || "N/A"}
-              </div>
-              <div>
-                <span className="font-semibold">PAT:</span> {order.pat || "N/A"}
+            </div>
+            <div>
+              <div style={{ borderTop: '1px solid #000', paddingTop: '5px', marginTop: '40px', textAlign: 'center' }}>
+                <p style={{ margin: 0, fontSize: '8pt', fontWeight: 'bold' }}>Assinatura do Cliente</p>
+                <p style={{ margin: '2px 0', fontSize: '7pt', color: '#64748b' }}>Ciente do serviço executado</p>
+                <p style={{ margin: '2px 0', fontSize: '7pt', color: '#64748b' }}>Data: ___/___/______</p>
               </div>
             </div>
           </div>
 
-          {/* Informações Básicas */}
-          <section className="mb-6">
-            <h2 className="text-xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-200">Informações Básicas</h2>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="font-semibold">Responsável Abertura:</span> {order.responsible_opening || "N/A"}
-              </div>
-              <div>
-                <span className="font-semibold">Técnico Responsável:</span> {order.responsible_tech || "N/A"}
-              </div>
-            </div>
-          </section>
-
-          {/* Cliente */}
-          <section className="mb-6">
-            <h2 className="text-xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-200">Dados do Cliente</h2>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="font-semibold">Cliente:</span> {order.client_name || "N/A"}
-              </div>
-              <div>
-                <span className="font-semibold">Telefone:</span> {order.phone || "N/A"}
-              </div>
-              <div>
-                <span className="font-semibold">Unidade:</span> {order.unit || "N/A"}
-              </div>
-              <div className="col-span-2">
-                <span className="font-semibold">Endereço de Atendimento:</span> {order.service_address || "N/A"}
-              </div>
-            </div>
-          </section>
-
-          {/* Equipamento */}
-          <section className="mb-6">
-            <h2 className="text-xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-200">Informações do Equipamento</h2>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="font-semibold">S/N Equipamento:</span> {order.equipment_serial || "N/A"}
-              </div>
-              <div>
-                <span className="font-semibold">S/N Placa:</span> {order.equipment_board_serial || "N/A"}
-              </div>
-            </div>
-          </section>
-
-          {/* Chamado */}
-          <section className="mb-6">
-            <h2 className="text-xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-200">Informações do Chamado</h2>
-            <div className="space-y-3 text-sm">
-              {order.call_info && (
-                <div>
-                  <span className="font-semibold">Descrição:</span>
-                  <p className="mt-1 whitespace-pre-wrap">{order.call_info}</p>
-                </div>
-              )}
-              {order.materials && (
-                <div>
-                  <span className="font-semibold">Materiais Utilizados:</span>
-                  <p className="mt-1 whitespace-pre-wrap">{order.materials}</p>
-                </div>
-              )}
-              {order.technical_report && (
-                <div>
-                  <span className="font-semibold">Laudo Técnico:</span>
-                  <p className="mt-1 whitespace-pre-wrap">{order.technical_report}</p>
-                </div>
-              )}
-            </div>
-          </section>
-
-          {/* Verificações */}
-          {order.verifications && order.verifications.length > 0 && (
-            <section className="mb-6">
-              <h2 className="text-xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-200">Verificações</h2>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="bg-slate-100">
-                    <tr>
-                      <th className="text-left p-2 border border-slate-300">Item Verificado</th>
-                      <th className="text-center p-2 border border-slate-300 w-24">Situação</th>
-                      <th className="text-left p-2 border border-slate-300">Observação</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {order.verifications.map((verification, index) => (
-                      <tr key={index}>
-                        <td className="p-2 border border-slate-300">{verification.item}</td>
-                        <td className="p-2 border border-slate-300 text-center">
-                          <span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${
-                            verification.status === "BOA" ? "bg-green-100 text-green-800" :
-                            verification.status === "RUIM" ? "bg-red-100 text-red-800" :
-                            "bg-slate-100 text-slate-600"
-                          }`}>
-                            {verification.status}
-                          </span>
-                        </td>
-                        <td className="p-2 border border-slate-300">{verification.observation || "-"}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </section>
-          )}
-
-          {/* Informações Finais */}
-          <section className="mb-6">
-            <h2 className="text-xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-200">Informações Finais</h2>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="font-semibold">Contador Total de Páginas:</span> {order.total_page_count || "N/A"}
-              </div>
-              <div>
-                <span className="font-semibold">Próxima Visita:</span> {order.next_visit || "N/A"}
-              </div>
-              <div>
-                <span className="font-semibold">Equipamento Trocado:</span> {order.equipment_replaced ? "Sim" : "Não"}
-              </div>
-            </div>
-            {order.pending_issues && (
-              <div className="mt-3">
-                <span className="font-semibold">Pendências:</span>
-                <p className="mt-1 whitespace-pre-wrap text-sm">{order.pending_issues}</p>
-              </div>
-            )}
-            {order.observations && (
-              <div className="mt-3">
-                <span className="font-semibold">Observações Gerais:</span>
-                <p className="mt-1 whitespace-pre-wrap text-sm">{order.observations}</p>
-              </div>
-            )}
-          </section>
-
-          {/* Assinaturas */}
-          <section className="mt-12 pt-8 border-t border-slate-200">
-            <div className="grid grid-cols-2 gap-8 text-center">
-              <div>
-                <div className="border-t border-slate-400 pt-2 mt-12">
-                  <p className="text-sm font-semibold">Assinatura do Técnico</p>
-                  <p className="text-xs text-slate-600 mt-1">{order.responsible_tech || ""}</p>
-                </div>
-              </div>
-              <div>
-                <div className="border-t border-slate-400 pt-2 mt-12">
-                  <p className="text-sm font-semibold">Assinatura do Cliente</p>
-                  <p className="text-xs text-slate-600 mt-1">Ciente do serviço executado</p>
-                </div>
-              </div>
-            </div>
-          </section>
         </div>
       </main>
     </div>
