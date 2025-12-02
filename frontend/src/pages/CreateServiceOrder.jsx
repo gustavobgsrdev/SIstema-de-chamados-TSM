@@ -78,10 +78,10 @@ const CreateServiceOrder = () => {
     setOcrLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const formData = new FormData();
-      formData.append("file", file);
+      const formDataUpload = new FormData();
+      formDataUpload.append("file", file);
 
-      const response = await axios.post(`${API}/ocr`, formData, {
+      const response = await axios.post(`${API}/ocr`, formDataUpload, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -89,7 +89,34 @@ const CreateServiceOrder = () => {
       });
 
       setOcrText(response.data.extracted_text);
-      toast.success("Texto extraído com sucesso!");
+      
+      // Auto-fill form fields with extracted data
+      const extracted = response.data.structured_data;
+      if (extracted && !extracted.parse_error) {
+        setFormData(prev => ({
+          ...prev,
+          ticket_number: extracted.ticket_number || prev.ticket_number,
+          os_number: extracted.os_number || prev.os_number,
+          pat: extracted.pat || prev.pat,
+          opening_date: extracted.opening_date || prev.opening_date,
+          responsible_opening: extracted.responsible_opening || prev.responsible_opening,
+          responsible_tech: extracted.responsible_tech || prev.responsible_tech,
+          phone: extracted.phone || prev.phone,
+          client_name: extracted.client_name || prev.client_name,
+          unit: extracted.unit || prev.unit,
+          service_address: extracted.service_address || prev.service_address,
+          equipment_serial: extracted.equipment_serial || prev.equipment_serial,
+          equipment_board_serial: extracted.equipment_board_serial || prev.equipment_board_serial,
+          call_info: extracted.call_info || prev.call_info,
+          materials: extracted.materials || prev.materials,
+          technical_report: extracted.technical_report || prev.technical_report,
+          total_page_count: extracted.total_page_count || prev.total_page_count,
+          observations: extracted.observations || prev.observations,
+        }));
+        toast.success("Campos preenchidos automaticamente!");
+      } else {
+        toast.success("Texto extraído! Preencha os campos manualmente.");
+      }
     } catch (error) {
       toast.error("Erro ao processar imagem");
     } finally {
