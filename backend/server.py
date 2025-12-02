@@ -86,6 +86,9 @@ class ServiceOrder(BaseModel):
     service_address: Optional[str] = None
     
     # Equipamento
+    equipment_type: Optional[str] = None  # Ex: IMPRESSORA
+    equipment_brand: Optional[str] = None  # Ex: SAMSUNG
+    equipment_model: Optional[str] = None  # Ex: M4070FR
     equipment_serial: Optional[str] = None
     equipment_board_serial: Optional[str] = None
     
