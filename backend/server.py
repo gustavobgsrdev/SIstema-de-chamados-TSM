@@ -125,6 +125,9 @@ class ServiceOrderCreate(BaseModel):
     client_name: Optional[str] = None
     unit: Optional[str] = None
     service_address: Optional[str] = None
+    equipment_type: Optional[str] = None
+    equipment_brand: Optional[str] = None
+    equipment_model: Optional[str] = None
     equipment_serial: Optional[str] = None
     equipment_board_serial: Optional[str] = None
     call_info: Optional[str] = None
