@@ -235,16 +235,39 @@ const EditServiceOrder = () => {
           {/* Equipamento */}
           <div className="bg-white rounded-xl shadow-sm p-6">
             <h2 className="text-lg font-semibold text-slate-800 mb-4">Informações do Equipamento</h2>
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-3 gap-4 mb-4">
               <div>
-                <Label htmlFor="equipment_serial">S/N Equipamento</Label>
+                <Label htmlFor="equipment_type">Tipo de Equipamento</Label>
                 <Input
-                  id="equipment_serial"
-                  value={formData.equipment_serial || ""}
-                  onChange={(e) => updateField("equipment_serial", e.target.value)}
-                  data-testid="equipment-serial-input"
+                  id="equipment_type"
+                  placeholder="Ex: IMPRESSORA"
+                  value={formData.equipment_type || ""}
+                  onChange={(e) => updateField("equipment_type", e.target.value)}
+                  data-testid="equipment-type-input"
                 />
               </div>
+              <div>
+                <Label htmlFor="equipment_brand">Marca</Label>
+                <Input
+                  id="equipment_brand"
+                  placeholder="Ex: SAMSUNG"
+                  value={formData.equipment_brand || ""}
+                  onChange={(e) => updateField("equipment_brand", e.target.value)}
+                  data-testid="equipment-brand-input"
+                />
+              </div>
+              <div>
+                <Label htmlFor="equipment_model">Modelo</Label>
+                <Input
+                  id="equipment_model"
+                  placeholder="Ex: M4070FR"
+                  value={formData.equipment_model || ""}
+                  onChange={(e) => updateField("equipment_model", e.target.value)}
+                  data-testid="equipment-model-input"
+                />
+              </div>
+            </div>
+            <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="equipment_board_serial">S/N Placa</Label>
                 <Input
@@ -252,6 +275,15 @@ const EditServiceOrder = () => {
                   value={formData.equipment_board_serial || ""}
                   onChange={(e) => updateField("equipment_board_serial", e.target.value)}
                   data-testid="equipment-board-serial-input"
+                />
+              </div>
+              <div>
+                <Label htmlFor="equipment_serial">S/N Equipamento</Label>
+                <Input
+                  id="equipment_serial"
+                  value={formData.equipment_serial || ""}
+                  onChange={(e) => updateField("equipment_serial", e.target.value)}
+                  data-testid="equipment-serial-input"
                 />
               </div>
             </div>
