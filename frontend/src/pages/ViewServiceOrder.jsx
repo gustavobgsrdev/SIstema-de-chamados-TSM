@@ -163,6 +163,14 @@ const ViewServiceOrder = () => {
           <h3 style={{ fontSize: '10pt', fontWeight: 'bold', margin: '8px 0 4px 0', textTransform: 'uppercase' }}>Informações do Equipamento</h3>
           <table className="print-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8.5pt', marginBottom: '8px' }}>
             <tbody>
+              {(order.equipment_type || order.equipment_brand || order.equipment_model) && (
+                <tr>
+                  <td style={{ border: '1px solid #000', padding: '3px 5px', width: '20%', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>Equipamento</td>
+                  <td style={{ border: '1px solid #000', padding: '3px 5px' }} colSpan="3">
+                    {[order.equipment_type, order.equipment_brand, order.equipment_model].filter(Boolean).join(' - ')}
+                  </td>
+                </tr>
+              )}
               <tr>
                 <td style={{ border: '1px solid #000', padding: '3px 5px', width: '20%', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>S/N Placa</td>
                 <td style={{ border: '1px solid #000', padding: '3px 5px', width: '30%' }}>{order.equipment_board_serial || ''}</td>
