@@ -191,13 +191,24 @@ const ViewServiceOrder = () => {
           </table>
 
           {/* Materials */}
-          <h3 style={{ fontSize: '10pt', fontWeight: 'bold', margin: '8px 0 4px 0', textTransform: 'uppercase' }}>Materiais / Laudo Técnico</h3>
+          <h3 style={{ fontSize: '10pt', fontWeight: 'bold', margin: '8px 0 4px 0', textTransform: 'uppercase' }}>Materiais</h3>
           <table className="print-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8.5pt', marginBottom: '8px' }}>
             <tbody>
               <tr>
-                <td style={{ border: '1px solid #000', padding: '3px 5px', minHeight: '35px', verticalAlign: 'top' }}>
-                  {order.materials && <div><strong>Materiais:</strong> {order.materials}</div>}
-                  {order.technical_report && <div style={{ marginTop: '4px' }}><strong>Laudo:</strong> {order.technical_report}</div>}
+                <td style={{ border: '1px solid #000', padding: '3px 5px', minHeight: '30px', verticalAlign: 'top' }}>
+                  {order.materials || ''}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          {/* Technical Report */}
+          <h3 style={{ fontSize: '10pt', fontWeight: 'bold', margin: '8px 0 4px 0', textTransform: 'uppercase' }}>Laudo Técnico</h3>
+          <table className="print-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8.5pt', marginBottom: '8px' }}>
+            <tbody>
+              <tr>
+                <td style={{ border: '1px solid #000', padding: '3px 5px', minHeight: '40px', verticalAlign: 'top' }}>
+                  {order.technical_report || ''}
                 </td>
               </tr>
             </tbody>
