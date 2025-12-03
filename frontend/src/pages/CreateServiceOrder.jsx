@@ -406,10 +406,18 @@ const CreateServiceOrder = () => {
                   data-testid="call-info-input"
                 />
               </div>
+            </div>
+          </div>
+
+          {/* Materiais e Laudo Técnico */}
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <h2 className="text-lg font-semibold text-slate-800 mb-4">Materiais e Laudo Técnico</h2>
+            <div className="space-y-4">
               <div>
                 <Label htmlFor="materials">Materiais Utilizados</Label>
                 <Textarea
                   id="materials"
+                  placeholder="Liste os materiais utilizados no atendimento"
                   value={formData.materials}
                   onChange={(e) => updateField("materials", e.target.value)}
                   rows={3}
@@ -417,9 +425,10 @@ const CreateServiceOrder = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="technical_report">Laudo Técnico</Label>
+                <Label htmlFor="technical_report">Laudo Técnico (Preenchido após manutenção)</Label>
                 <Textarea
                   id="technical_report"
+                  placeholder="Laudo técnico será preenchido após a conclusão do serviço"
                   value={formData.technical_report}
                   onChange={(e) => updateField("technical_report", e.target.value)}
                   rows={4}
