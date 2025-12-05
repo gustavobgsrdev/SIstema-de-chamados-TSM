@@ -117,6 +117,7 @@ const EditServiceOrder = () => {
               <ArrowLeft className="w-4 h-4 mr-2" />
               Voltar
             </Button>
+            <img src="/tsm-logo.png" alt="TSM Printer Solutions" className="h-10 w-auto" />
             <div>
               <h1 className="text-xl font-bold text-slate-800">Editar Ordem de Serviço</h1>
               <p className="text-sm text-slate-600">O.S. #{formData.os_number || "S/N"}</p>
