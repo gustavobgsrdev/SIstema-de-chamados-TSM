@@ -64,6 +64,7 @@ const ViewServiceOrder = () => {
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Voltar
               </Button>
+              <img src="/tsm-logo.png" alt="TSM Printer Solutions" className="h-10 w-auto" />
               <div>
                 <h1 className="text-xl font-bold text-slate-800">Visualizar O.S.</h1>
                 <p className="text-sm text-slate-600">O.S. #{order.os_number || "S/N"}</p>
