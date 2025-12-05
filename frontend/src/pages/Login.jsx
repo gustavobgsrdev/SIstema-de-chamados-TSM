@@ -48,13 +48,11 @@ const Login = ({ setIsAuthenticated }) => {
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="flex justify-center mb-6">
-            <div className="bg-blue-600 p-4 rounded-xl">
-              <Wrench className="w-8 h-8 text-white" />
-            </div>
+            <img src="/tsm-logo.png" alt="TSM Printer Solutions" className="h-20 w-auto" />
           </div>
           
-          <h1 className="text-3xl font-bold text-center text-slate-800 mb-2">
-            Sistema de O.S.
+          <h1 className="text-2xl font-bold text-center text-slate-800 mb-2">
+            Sistema de Ordens de Serviço
           </h1>
           <p className="text-center text-slate-600 mb-8">
             {isLogin ? "Faça login para continuar" : "Crie sua conta"}
