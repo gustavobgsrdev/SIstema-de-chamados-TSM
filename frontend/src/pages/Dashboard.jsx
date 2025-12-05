@@ -90,9 +90,7 @@ const Dashboard = () => {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="bg-blue-600 p-2 rounded-lg">
-                <FileText className="w-6 h-6 text-white" />
-              </div>
+              <img src="/tsm-logo.png" alt="TSM Printer Solutions" className="h-12 w-auto" />
               <div>
                 <h1 className="text-xl font-bold text-slate-800">Sistema de O.S.</h1>
                 <p className="text-sm text-slate-600">Gerenciamento de Ordens de Serviço</p>
