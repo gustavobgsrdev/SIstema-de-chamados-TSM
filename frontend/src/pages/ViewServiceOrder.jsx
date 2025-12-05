@@ -98,9 +98,12 @@ const ViewServiceOrder = () => {
           
           {/* Header with Logo */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '15px', borderBottom: '2px solid #000', paddingBottom: '10px' }}>
-            <div>
-              <h1 style={{ fontSize: '20pt', fontWeight: 'bold', margin: 0, color: '#1e40af' }}>TSM PRINTER SOLUTIONS</h1>
-              <p style={{ fontSize: '9pt', margin: '2px 0', color: '#64748b' }}>Soluções em Impressão e Manutenção</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <img src="/tsm-logo.png" alt="TSM Logo" style={{ height: '50px', width: 'auto' }} />
+              <div>
+                <h1 style={{ fontSize: '18pt', fontWeight: 'bold', margin: 0, color: '#1e40af' }}>TSM PRINTER SOLUTIONS</h1>
+                <p style={{ fontSize: '9pt', margin: '2px 0', color: '#64748b' }}>Soluções em Impressão e Manutenção</p>
+              </div>
             </div>
             <div style={{ textAlign: 'right', fontSize: '8pt' }}>
               <p style={{ margin: '2px 0' }}><strong>Contato:</strong></p>
