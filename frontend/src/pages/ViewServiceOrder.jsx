@@ -293,14 +293,18 @@ const ViewServiceOrder = () => {
               <div style={{ borderTop: '1px solid #000', paddingTop: '5px', marginTop: '40px', textAlign: 'center' }}>
                 <p style={{ margin: 0, fontSize: '8pt', fontWeight: 'bold' }}>Assinatura do Técnico</p>
                 <p style={{ margin: '2px 0', fontSize: '7pt', color: '#64748b' }}>{order.responsible_tech || ''}</p>
-                <p style={{ margin: '2px 0', fontSize: '7pt', color: '#64748b' }}>Data: ___/___/______</p>
+                <p style={{ margin: '2px 0', fontSize: '7pt', color: '#000' }}>
+                  Data: ___/___/______ Hora: ___:___
+                </p>
               </div>
             </div>
             <div>
               <div style={{ borderTop: '1px solid #000', paddingTop: '5px', marginTop: '40px', textAlign: 'center' }}>
                 <p style={{ margin: 0, fontSize: '8pt', fontWeight: 'bold' }}>Assinatura do Cliente</p>
                 <p style={{ margin: '2px 0', fontSize: '7pt', color: '#64748b' }}>Ciente do serviço executado</p>
-                <p style={{ margin: '2px 0', fontSize: '7pt', color: '#64748b' }}>Data: ___/___/______</p>
+                <p style={{ margin: '2px 0', fontSize: '7pt', color: '#000' }}>
+                  Data: ___/___/______ Hora: ___:___
+                </p>
               </div>
             </div>
           </div>
