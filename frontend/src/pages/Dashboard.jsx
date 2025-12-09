@@ -3,19 +3,34 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Plus, Search, Eye, Edit, Trash2, LogOut, FileText } from "lucide-react";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+const STATUS_COLORS = {
+  "ABERTO": "bg-yellow-100 text-yellow-800 border-yellow-300",
+  "EM ROTA": "bg-gray-100 text-gray-800 border-gray-300",
+  "LIBERADO": "bg-blue-100 text-blue-800 border-blue-300",
+  "PENDENCIA": "bg-red-100 text-red-800 border-red-300",
+  "SUSPENSO": "bg-pink-100 text-pink-800 border-pink-300",
+  "DEFINIR": "bg-purple-100 text-purple-800 border-purple-300"
+};
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [stats, setStats] = useState({});
   const [user, setUser] = useState(null);
+  
+  // Filters
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [patFilter, setPatFilter] = useState("");
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -23,21 +38,12 @@ const Dashboard = () => {
       setUser(JSON.parse(userData));
     }
     loadOrders();
+    loadStats();
   }, []);
 
   useEffect(() => {
-    if (searchTerm) {
-      const filtered = orders.filter(
-        (order) =>
-          order.os_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          order.client_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          order.ticket_number?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredOrders(filtered);
-    } else {
-      setFilteredOrders(orders);
-    }
-  }, [searchTerm, orders]);
+    applyFilters();
+  }, [searchTerm, statusFilter, patFilter, orders]);
 
   const loadOrders = async () => {
     try {
@@ -54,6 +60,46 @@ const Dashboard = () => {
     }
   };
 
+  const loadStats = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`${API}/service-orders/stats`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setStats(response.data);
+    } catch (error) {
+      console.error("Erro ao carregar estatísticas");
+    }
+  };
+
+  const applyFilters = () => {
+    let filtered = [...orders];
+
+    // Search filter (ticket_number or os_number or client)
+    if (searchTerm) {
+      filtered = filtered.filter(
+        (order) =>
+          order.os_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          order.client_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          order.ticket_number?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Status filter
+    if (statusFilter) {
+      filtered = filtered.filter(order => order.status === statusFilter);
+    }
+
+    // PAT filter
+    if (patFilter) {
+      filtered = filtered.filter(order => 
+        order.pat?.toLowerCase().includes(patFilter.toLowerCase())
+      );
+    }
+
+    setFilteredOrders(filtered);
+  };
+
   const handleDelete = async (id) => {
     if (!window.confirm("Deseja realmente excluir esta O.S.?")) return;
 
@@ -64,6 +110,7 @@ const Dashboard = () => {
       });
       toast.success("O.S. excluída com sucesso");
       loadOrders();
+      loadStats();
     } catch (error) {
       toast.error("Erro ao excluir O.S.");
     }
@@ -115,27 +162,82 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
-        {/* Actions Bar */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3 mb-6">
+          <div className="bg-white rounded-lg shadow-sm p-4 border-l-4 border-slate-500">
+            <p className="text-xs text-slate-600 mb-1">Total</p>
+            <p className="text-2xl font-bold text-slate-800">{stats.total || 0}</p>
+          </div>
+          <div className="bg-yellow-50 rounded-lg shadow-sm p-4 border-l-4 border-yellow-500">
+            <p className="text-xs text-yellow-700 mb-1">Abertos</p>
+            <p className="text-2xl font-bold text-yellow-800">{stats.ABERTO || 0}</p>
+          </div>
+          <div className="bg-gray-50 rounded-lg shadow-sm p-4 border-l-4 border-gray-500">
+            <p className="text-xs text-gray-700 mb-1">Em Rota</p>
+            <p className="text-2xl font-bold text-gray-800">{stats["EM ROTA"] || 0}</p>
+          </div>
+          <div className="bg-blue-50 rounded-lg shadow-sm p-4 border-l-4 border-blue-500">
+            <p className="text-xs text-blue-700 mb-1">Liberados</p>
+            <p className="text-2xl font-bold text-blue-800">{stats.LIBERADO || 0}</p>
+          </div>
+          <div className="bg-red-50 rounded-lg shadow-sm p-4 border-l-4 border-red-500">
+            <p className="text-xs text-red-700 mb-1">Pendência</p>
+            <p className="text-2xl font-bold text-red-800">{stats.PENDENCIA || 0}</p>
+          </div>
+          <div className="bg-pink-50 rounded-lg shadow-sm p-4 border-l-4 border-pink-500">
+            <p className="text-xs text-pink-700 mb-1">Suspensos</p>
+            <p className="text-2xl font-bold text-pink-800">{stats.SUSPENSO || 0}</p>
+          </div>
+          <div className="bg-purple-50 rounded-lg shadow-sm p-4 border-l-4 border-purple-500">
+            <p className="text-xs text-purple-700 mb-1">Definir</p>
+            <p className="text-2xl font-bold text-purple-800">{stats.DEFINIR || 0}</p>
+          </div>
+        </div>
+
+        {/* Filters Bar */}
+        <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+              <Input
+                type="text"
+                placeholder="Buscar por Nº O.S., Cliente, Chamado..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+                data-testid="search-input"
+              />
+            </div>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger data-testid="status-filter">
+                <SelectValue placeholder="Filtrar por Situação" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value=" ">Todas as Situações</SelectItem>
+                <SelectItem value="ABERTO">ABERTO</SelectItem>
+                <SelectItem value="EM ROTA">EM ROTA</SelectItem>
+                <SelectItem value="LIBERADO">LIBERADO</SelectItem>
+                <SelectItem value="PENDENCIA">PENDÊNCIA</SelectItem>
+                <SelectItem value="SUSPENSO">SUSPENSO</SelectItem>
+                <SelectItem value="DEFINIR">DEFINIR</SelectItem>
+              </SelectContent>
+            </Select>
             <Input
               type="text"
-              placeholder="Buscar por nº O.S., cliente ou chamado..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-              data-testid="search-input"
+              placeholder="Filtrar por PAT"
+              value={patFilter}
+              onChange={(e) => setPatFilter(e.target.value)}
+              data-testid="pat-filter"
             />
+            <Button
+              onClick={() => navigate("/create")}
+              className="bg-blue-600 hover:bg-blue-700"
+              data-testid="create-order-button"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Nova O.S.
+            </Button>
           </div>
-          <Button
-            onClick={() => navigate("/create")}
-            className="bg-blue-600 hover:bg-blue-700"
-            data-testid="create-order-button"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Nova O.S.
-          </Button>
         </div>
 
         {/* Orders Grid */}
@@ -143,14 +245,14 @@ const Dashboard = () => {
           <div className="bg-white rounded-xl shadow-sm p-12 text-center">
             <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-slate-800 mb-2">
-              {searchTerm ? "Nenhuma O.S. encontrada" : "Nenhuma O.S. cadastrada"}
+              {searchTerm || statusFilter || patFilter ? "Nenhuma O.S. encontrada" : "Nenhuma O.S. cadastrada"}
             </h3>
             <p className="text-slate-600 mb-6">
-              {searchTerm
-                ? "Tente buscar com outros termos"
+              {searchTerm || statusFilter || patFilter
+                ? "Tente ajustar os filtros"
                 : "Comece criando sua primeira ordem de serviço"}
             </p>
-            {!searchTerm && (
+            {!searchTerm && !statusFilter && !patFilter && (
               <Button onClick={() => navigate("/create")} className="bg-blue-600 hover:bg-blue-700">
                 <Plus className="w-4 h-4 mr-2" />
                 Criar primeira O.S.
@@ -162,7 +264,7 @@ const Dashboard = () => {
             {filteredOrders.map((order) => (
               <div
                 key={order.id}
-                className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6"
+                className={`bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6 border-l-4 ${STATUS_COLORS[order.status || "ABERTO"].split(" ")[2]}`}
                 data-testid={`order-card-${order.id}`}
               >
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -176,6 +278,9 @@ const Dashboard = () => {
                           Chamado: {order.ticket_number}
                         </span>
                       )}
+                      <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${STATUS_COLORS[order.status || "ABERTO"]}`}>
+                        {order.status || "ABERTO"}
+                      </span>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-slate-600">
                       {order.client_name && (
@@ -183,9 +288,9 @@ const Dashboard = () => {
                           <span className="font-medium">Cliente:</span> {order.client_name}
                         </p>
                       )}
-                      {order.equipment_serial && (
+                      {order.pat && (
                         <p>
-                          <span className="font-medium">S/N:</span> {order.equipment_serial}
+                          <span className="font-medium">PAT:</span> {order.pat}
                         </p>
                       )}
                       {order.opening_date && (
