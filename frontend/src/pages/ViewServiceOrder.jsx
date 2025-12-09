@@ -97,18 +97,23 @@ const ViewServiceOrder = () => {
         <div className="bg-white print-container" style={{ maxWidth: '210mm', margin: '0 auto', padding: '10mm', fontSize: '10pt' }}>
           
           {/* Header with Logo */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '15px', borderBottom: '2px solid #000', paddingBottom: '10px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-              <img src="/tsm-logo.png" alt="TSM Logo" style={{ height: '50px', width: 'auto' }} />
-              <div>
-                <h1 style={{ fontSize: '18pt', fontWeight: 'bold', margin: 0, color: '#1e40af' }}>TSM PRINTER SOLUTIONS</h1>
-                <p style={{ fontSize: '9pt', margin: '2px 0', color: '#64748b' }}>Soluções em Impressão e Manutenção</p>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '12px', borderBottom: '2px solid #000', paddingBottom: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', flex: 1 }}>
+              <img src="/tsm-logo.png" alt="TSM Logo" style={{ height: '45px', width: 'auto' }} />
+              <div style={{ fontSize: '7.5pt', lineHeight: '1.3' }}>
+                <h1 style={{ fontSize: '14pt', fontWeight: 'bold', margin: '0 0 3px 0', color: '#1e40af' }}>TSM PRINTER SOLUTIONS</h1>
+                <p style={{ margin: '1px 0' }}><strong>CNPJ:</strong> 29.511.297/0001-31</p>
+                <p style={{ margin: '1px 0' }}><strong>Endereço:</strong> Avenida Doutor Albino Imparato, 16 (LOTE 16 QUADRA 69)</p>
+                <p style={{ margin: '1px 0' }}>Jardim Catarina - São Gonçalo/RJ - CEP: 24716-452</p>
               </div>
             </div>
-            <div style={{ textAlign: 'right', fontSize: '8pt' }}>
-              <p style={{ margin: '2px 0' }}><strong>Contato:</strong></p>
-              <p style={{ margin: '2px 0' }}>21 99637-4664</p>
-              <p style={{ margin: '2px 0' }}>21 3758-5168</p>
+            <div style={{ textAlign: 'right', fontSize: '7.5pt', lineHeight: '1.3', minWidth: '180px' }}>
+              <p style={{ margin: '1px 0' }}><strong>Telefones:</strong></p>
+              <p style={{ margin: '1px 0' }}>(21) 3758-5168</p>
+              <p style={{ margin: '1px 0' }}>(21) 99637-4664</p>
+              <p style={{ margin: '1px 0' }}><strong>E-mail:</strong> tsmcartucho@gmail.com</p>
+              <p style={{ margin: '4px 0 1px 0' }}><strong>Responsável:</strong></p>
+              <p style={{ margin: '1px 0' }}>{order.responsible_tech || 'Vinnicius Fernandes Gomes'}</p>
             </div>
           </div>
 
