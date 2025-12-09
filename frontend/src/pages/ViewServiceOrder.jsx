@@ -216,7 +216,7 @@ const ViewServiceOrder = () => {
           <table className="print-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8.5pt', marginBottom: '8px' }}>
             <tbody>
               <tr>
-                <td style={{ border: '1px solid #000', padding: '8px 5px', minHeight: '80px', verticalAlign: 'top', lineHeight: '1.8' }}>
+                <td style={{ border: '1px solid #000', padding: '10px 8px', minHeight: '120px', verticalAlign: 'top', lineHeight: '2.2' }}>
                   {order.technical_report || ''}
                 </td>
               </tr>
