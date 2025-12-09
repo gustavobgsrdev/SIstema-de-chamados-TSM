@@ -376,8 +376,25 @@ async def create_service_order(
     return order
 
 @api_router.get("/service-orders", response_model=List[ServiceOrder])
-async def get_service_orders(current_user: User = Depends(get_current_user)):
-    orders = await db.service_orders.find({}, {"_id": 0}).to_list(1000)
+async def get_service_orders(
+    current_user: User = Depends(get_current_user),
+    status: Optional[str] = None,
+    pat: Optional[str] = None,
+    ticket_number: Optional[str] = None,
+    os_number: Optional[str] = None
+):
+    # Build filter
+    filter_query = {}
+    if status:
+        filter_query['status'] = status
+    if pat:
+        filter_query['pat'] = {"$regex": pat, "$options": "i"}
+    if ticket_number:
+        filter_query['ticket_number'] = {"$regex": ticket_number, "$options": "i"}
+    if os_number:
+        filter_query['os_number'] = {"$regex": os_number, "$options": "i"}
+    
+    orders = await db.service_orders.find(filter_query, {"_id": 0}).to_list(1000)
     
     # Convert ISO strings to datetime
     for order in orders:
@@ -387,6 +404,37 @@ async def get_service_orders(current_user: User = Depends(get_current_user)):
             order['updated_at'] = datetime.fromisoformat(order['updated_at'])
     
     return orders
+
+@api_router.get("/service-orders/stats")
+async def get_service_orders_stats(current_user: User = Depends(get_current_user)):
+    """Get statistics by status"""
+    pipeline = [
+        {
+            "$group": {
+                "_id": "$status",
+                "count": {"$sum": 1}
+            }
+        }
+    ]
+    
+    results = await db.service_orders.aggregate(pipeline).to_list(None)
+    
+    stats = {
+        "ABERTO": 0,
+        "EM ROTA": 0,
+        "LIBERADO": 0,
+        "PENDENCIA": 0,
+        "SUSPENSO": 0,
+        "DEFINIR": 0
+    }
+    
+    for result in results:
+        status = result.get("_id") or "ABERTO"
+        stats[status] = result.get("count", 0)
+    
+    stats["total"] = sum(stats.values())
+    
+    return stats
 
 @api_router.get("/service-orders/{order_id}", response_model=ServiceOrder)
 async def get_service_order(
