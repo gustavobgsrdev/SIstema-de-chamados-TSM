@@ -261,12 +261,12 @@ const Dashboard = () => {
                 data-testid="search-input"
               />
             </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <Select value={statusFilter || "TODAS"} onValueChange={(value) => setStatusFilter(value === "TODAS" ? "" : value)}>
               <SelectTrigger data-testid="status-filter">
                 <SelectValue placeholder="Situação" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todas</SelectItem>
+                <SelectItem value="TODAS">Todas</SelectItem>
                 <SelectItem value="URGENTE">URGENTE</SelectItem>
                 <SelectItem value="ABERTO">ABERTO</SelectItem>
                 <SelectItem value="EM ROTA">EM ROTA</SelectItem>
