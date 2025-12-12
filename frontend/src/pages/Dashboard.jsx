@@ -35,6 +35,8 @@ const Dashboard = () => {
   const [patFilter, setPatFilter] = useState("");
   const [serialFilter, setSerialFilter] = useState("");
   const [unitFilter, setUnitFilter] = useState("");
+  const [dateStart, setDateStart] = useState("");
+  const [dateEnd, setDateEnd] = useState("");
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
