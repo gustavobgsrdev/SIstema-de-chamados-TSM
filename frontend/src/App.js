@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import CreateServiceOrder from "./pages/CreateServiceOrder";
 import EditServiceOrder from "./pages/EditServiceOrder";
 import ViewServiceOrder from "./pages/ViewServiceOrder";
+import UserManagement from "./pages/UserManagement";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
