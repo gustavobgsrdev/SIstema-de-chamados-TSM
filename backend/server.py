@@ -431,7 +431,8 @@ async def get_service_orders_stats(current_user: User = Depends(get_current_user
         "LIBERADO": 0,
         "PENDENCIA": 0,
         "SUSPENSO": 0,
-        "DEFINIR": 0
+        "DEFINIR": 0,
+        "RESOLVIDO": 0
     }
     
     for result in results:
