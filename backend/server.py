@@ -315,7 +315,11 @@ async def root():
 
 # Auth routes
 @api_router.post("/auth/register", response_model=TokenResponse)
-async def register(user_data: UserCreate):
+async def register(user_data: UserCreate, current_user: User = Depends(get_current_user)):
+    # Only ADMIN can create new users
+    if current_user.role != "ADMIN":
+        raise HTTPException(status_code=403, detail="Only administrators can create new users")
+    
     # Check if user exists
     existing_user = await db.users.find_one({"email": user_data.email})
     if existing_user:
@@ -324,7 +328,8 @@ async def register(user_data: UserCreate):
     # Create user
     user = User(
         email=user_data.email,
-        name=user_data.name
+        name=user_data.name,
+        role=user_data.role
     )
     
     user_doc = user.model_dump()
