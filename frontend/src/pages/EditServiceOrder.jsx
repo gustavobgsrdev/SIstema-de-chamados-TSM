@@ -174,6 +174,7 @@ const EditServiceOrder = () => {
                     <SelectItem value="PENDENCIA">PENDÊNCIA</SelectItem>
                     <SelectItem value="SUSPENSO">SUSPENSO</SelectItem>
                     <SelectItem value="DEFINIR">DEFINIR</SelectItem>
+                    <SelectItem value="RESOLVIDO">RESOLVIDO</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
