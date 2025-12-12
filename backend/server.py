@@ -38,7 +38,7 @@ security = HTTPBearer()
 # ============ MODELS ============
 
 class UserCreate(BaseModel):
-    email: EmailStr
+    email: str  # Username
     password: str
     name: str
     role: str = "USER"
