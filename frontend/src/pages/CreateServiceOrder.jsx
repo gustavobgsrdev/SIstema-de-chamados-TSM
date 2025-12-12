@@ -39,6 +39,7 @@ const CreateServiceOrder = () => {
     ticket_number: "",
     os_number: "",
     pat: "",
+    status: "ABERTO",
     opening_date: "",
     responsible_opening: "",
     responsible_tech: "",
