@@ -11,6 +11,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const STATUS_COLORS = {
+  "URGENTE": "bg-orange-100 text-orange-900 border-orange-500",
   "ABERTO": "bg-yellow-100 text-yellow-800 border-yellow-300",
   "EM ROTA": "bg-gray-100 text-gray-800 border-gray-300",
   "LIBERADO": "bg-blue-100 text-blue-800 border-blue-300",
