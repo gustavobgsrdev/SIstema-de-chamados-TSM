@@ -92,7 +92,7 @@ const Dashboard = () => {
     }
 
     // Status filter
-    if (statusFilter) {
+    if (statusFilter && statusFilter.trim()) {
       filtered = filtered.filter(order => order.status === statusFilter);
     }
 
@@ -115,6 +115,19 @@ const Dashboard = () => {
       filtered = filtered.filter(order => 
         order.unit?.toLowerCase().includes(unitFilter.toLowerCase())
       );
+    }
+
+    // Date range filter
+    if (dateStart || dateEnd) {
+      filtered = filtered.filter(order => {
+        if (!order.opening_date) return false;
+        const orderDate = order.opening_date;
+        
+        if (dateStart && orderDate < dateStart) return false;
+        if (dateEnd && orderDate > dateEnd) return false;
+        
+        return true;
+      });
     }
 
     setFilteredOrders(filtered);
