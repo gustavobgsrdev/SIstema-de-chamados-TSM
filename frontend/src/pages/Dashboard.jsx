@@ -217,8 +217,8 @@ const Dashboard = () => {
 
         {/* Filters Bar */}
         <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="relative">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-4">
+            <div className="relative md:col-span-2">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
               <Input
                 type="text"
@@ -231,25 +231,42 @@ const Dashboard = () => {
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger data-testid="status-filter">
-                <SelectValue placeholder="Filtrar por Situação" />
+                <SelectValue placeholder="Situação" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value=" ">Todas as Situações</SelectItem>
+                <SelectItem value=" ">Todas</SelectItem>
                 <SelectItem value="ABERTO">ABERTO</SelectItem>
                 <SelectItem value="EM ROTA">EM ROTA</SelectItem>
                 <SelectItem value="LIBERADO">LIBERADO</SelectItem>
                 <SelectItem value="PENDENCIA">PENDÊNCIA</SelectItem>
                 <SelectItem value="SUSPENSO">SUSPENSO</SelectItem>
                 <SelectItem value="DEFINIR">DEFINIR</SelectItem>
+                <SelectItem value="RESOLVIDO">RESOLVIDO</SelectItem>
               </SelectContent>
             </Select>
             <Input
               type="text"
-              placeholder="Filtrar por PAT"
+              placeholder="PAT"
               value={patFilter}
               onChange={(e) => setPatFilter(e.target.value)}
               data-testid="pat-filter"
             />
+            <Input
+              type="text"
+              placeholder="Nº Série"
+              value={serialFilter}
+              onChange={(e) => setSerialFilter(e.target.value)}
+              data-testid="serial-filter"
+            />
+            <Input
+              type="text"
+              placeholder="Unidade"
+              value={unitFilter}
+              onChange={(e) => setUnitFilter(e.target.value)}
+              data-testid="unit-filter"
+            />
+          </div>
+          <div className="flex gap-2">
             <Button
               onClick={() => navigate("/create")}
               className="bg-blue-600 hover:bg-blue-700"
@@ -257,6 +274,34 @@ const Dashboard = () => {
             >
               <Plus className="w-4 h-4 mr-2" />
               Nova O.S.
+            </Button>
+            <Button
+              onClick={async () => {
+                try {
+                  const token = localStorage.getItem("token");
+                  const response = await fetch(`${API}/service-orders/export`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                  });
+                  const blob = await response.blob();
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = "relatorio_ordens_servico.csv";
+                  document.body.appendChild(a);
+                  a.click();
+                  window.URL.revokeObjectURL(url);
+                  document.body.removeChild(a);
+                  toast.success("Relatório exportado com sucesso!");
+                } catch (error) {
+                  toast.error("Erro ao exportar relatório");
+                }
+              }}
+              variant="outline"
+              className="border-green-600 text-green-600 hover:bg-green-50"
+              data-testid="export-button"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              Exportar Excel
             </Button>
           </div>
         </div>
