@@ -100,6 +100,20 @@ const Dashboard = () => {
       );
     }
 
+    // Serial number filter
+    if (serialFilter) {
+      filtered = filtered.filter(order => 
+        order.equipment_serial?.toLowerCase().includes(serialFilter.toLowerCase())
+      );
+    }
+
+    // Unit filter
+    if (unitFilter) {
+      filtered = filtered.filter(order => 
+        order.unit?.toLowerCase().includes(unitFilter.toLowerCase())
+      );
+    }
+
     setFilteredOrders(filtered);
   };
 
