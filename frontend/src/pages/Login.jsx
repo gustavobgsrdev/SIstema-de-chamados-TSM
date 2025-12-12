@@ -12,12 +12,10 @@ const API = `${BACKEND_URL}/api`;
 
 const Login = ({ setIsAuthenticated }) => {
   const navigate = useNavigate();
-  const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    name: "",
   });
 
   const handleSubmit = async (e) => {
@@ -25,18 +23,17 @@ const Login = ({ setIsAuthenticated }) => {
     setLoading(true);
 
     try {
-      const endpoint = isLogin ? "/auth/login" : "/auth/register";
-      const response = await axios.post(`${API}${endpoint}`, formData);
+      const response = await axios.post(`${API}/auth/login`, formData);
 
       localStorage.setItem("token", response.data.access_token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
 
-      toast.success(isLogin ? "Login realizado com sucesso!" : "Cadastro realizado com sucesso!");
+      toast.success("Login realizado com sucesso!");
       setIsAuthenticated(true);
       navigate("/dashboard");
     } catch (error) {
       toast.error(
-        error.response?.data?.detail || "Erro ao processar solicitação"
+        error.response?.data?.detail || "Usuário ou senha inválidos"
       );
     } finally {
       setLoading(false);
