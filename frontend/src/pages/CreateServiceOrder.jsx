@@ -272,6 +272,7 @@ const CreateServiceOrder = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="URGENTE">URGENTE</SelectItem>
                     <SelectItem value="ABERTO">ABERTO</SelectItem>
                     <SelectItem value="EM ROTA">EM ROTA</SelectItem>
                     <SelectItem value="LIBERADO">LIBERADO</SelectItem>
