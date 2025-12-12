@@ -52,32 +52,16 @@ const Login = ({ setIsAuthenticated }) => {
             Sistema de Ordens de Serviço
           </h1>
           <p className="text-center text-slate-600 mb-8">
-            {isLogin ? "Faça login para continuar" : "Crie sua conta"}
+            Faça login para continuar
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4" data-testid="login-form">
-            {!isLogin && (
-              <div>
-                <Label htmlFor="name">Nome Completo</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  data-testid="name-input"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  required={!isLogin}
-                  className="mt-1"
-                />
-              </div>
-            )}
-
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Usuário</Label>
               <Input
                 id="email"
-                type="email"
+                type="text"
+                placeholder="seu_usuario"
                 data-testid="email-input"
                 value={formData.email}
                 onChange={(e) =>
@@ -93,6 +77,7 @@ const Login = ({ setIsAuthenticated }) => {
               <Input
                 id="password"
                 type="password"
+                placeholder="••••"
                 data-testid="password-input"
                 value={formData.password}
                 onChange={(e) =>
@@ -109,21 +94,9 @@ const Login = ({ setIsAuthenticated }) => {
               disabled={loading}
               data-testid="submit-button"
             >
-              {loading ? "Processando..." : isLogin ? "Entrar" : "Cadastrar"}
+              {loading ? "Entrando..." : "Entrar"}
             </Button>
           </form>
-
-          <div className="mt-6 text-center">
-            <button
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-              data-testid="toggle-auth-mode"
-            >
-              {isLogin
-                ? "Não tem conta? Cadastre-se"
-                : "Já tem conta? Faça login"}
-            </button>
-          </div>
         </div>
       </div>
     </div>
