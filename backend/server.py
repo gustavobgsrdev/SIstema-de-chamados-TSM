@@ -421,11 +421,13 @@ async def get_service_orders(
     ticket_number: Optional[str] = None,
     os_number: Optional[str] = None,
     equipment_serial: Optional[str] = None,
-    unit: Optional[str] = None
+    unit: Optional[str] = None,
+    date_start: Optional[str] = None,
+    date_end: Optional[str] = None
 ):
     # Build filter
     filter_query = {}
-    if status:
+    if status and status.strip():
         filter_query['status'] = status
     if pat:
         filter_query['pat'] = {"$regex": pat, "$options": "i"}
@@ -437,6 +439,16 @@ async def get_service_orders(
         filter_query['equipment_serial'] = {"$regex": equipment_serial, "$options": "i"}
     if unit:
         filter_query['unit'] = {"$regex": unit, "$options": "i"}
+    
+    # Date range filter
+    if date_start or date_end:
+        date_filter = {}
+        if date_start:
+            date_filter["$gte"] = date_start
+        if date_end:
+            date_filter["$lte"] = date_end
+        if date_filter:
+            filter_query['opening_date'] = date_filter
     
     # Get orders sorted by creation date (oldest first)
     orders = await db.service_orders.find(filter_query, {"_id": 0}).sort("created_at", 1).to_list(1000)
