@@ -49,7 +49,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     applyFilters();
-  }, [searchTerm, statusFilter, patFilter, serialFilter, unitFilter, orders]);
+  }, [searchTerm, statusFilter, patFilter, serialFilter, unitFilter, dateStart, dateEnd, orders]);
 
   const loadOrders = async () => {
     try {
