@@ -443,6 +443,41 @@ async def get_service_orders_stats(current_user: User = Depends(get_current_user
     
     return stats
 
+@api_router.get("/service-orders/export")
+async def export_service_orders(current_user: User = Depends(get_current_user)):
+    """Export service orders to CSV"""
+    from fastapi.responses import StreamingResponse
+    import io
+    
+    # Get all orders
+    orders = await db.service_orders.find({}, {"_id": 0}).to_list(1000)
+    
+    # Create CSV content
+    csv_content = "N° CHAMADO,N° OS,PAT,CLIENTE,UNIDADE,DATA,SITUAÇÃO\n"
+    
+    for order in orders:
+        ticket_number = order.get('ticket_number', '')
+        os_number = order.get('os_number', '')
+        pat = order.get('pat', '')
+        client_name = order.get('client_name', '')
+        unit = order.get('unit', '')
+        opening_date = order.get('opening_date', '')
+        status = order.get('status', 'ABERTO')
+        
+        # Escape commas in fields
+        csv_content += f'"{ticket_number}","{os_number}","{pat}","{client_name}","{unit}","{opening_date}","{status}"\n'
+    
+    # Create streaming response
+    stream = io.StringIO(csv_content)
+    
+    return StreamingResponse(
+        iter([stream.getvalue()]),
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": "attachment; filename=relatorio_ordens_servico.csv"
+        }
+    )
+
 @api_router.get("/service-orders/{order_id}", response_model=ServiceOrder)
 async def get_service_order(
     order_id: str,
