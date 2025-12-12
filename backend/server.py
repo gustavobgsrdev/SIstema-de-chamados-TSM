@@ -400,7 +400,8 @@ async def get_service_orders(
     if unit:
         filter_query['unit'] = {"$regex": unit, "$options": "i"}
     
-    orders = await db.service_orders.find(filter_query, {"_id": 0}).to_list(1000)
+    # Get orders sorted by creation date (oldest first)
+    orders = await db.service_orders.find(filter_query, {"_id": 0}).sort("created_at", 1).to_list(1000)
     
     # Convert ISO strings to datetime
     for order in orders:
@@ -409,7 +410,11 @@ async def get_service_orders(
         if isinstance(order.get('updated_at'), str):
             order['updated_at'] = datetime.fromisoformat(order['updated_at'])
     
-    return orders
+    # Separate URGENTE orders and put them first
+    urgent_orders = [o for o in orders if o.get('status') == 'URGENTE']
+    normal_orders = [o for o in orders if o.get('status') != 'URGENTE']
+    
+    return urgent_orders + normal_orders
 
 @api_router.get("/service-orders/stats")
 async def get_service_orders_stats(current_user: User = Depends(get_current_user)):
