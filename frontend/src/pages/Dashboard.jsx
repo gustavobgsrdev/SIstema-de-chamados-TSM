@@ -16,7 +16,8 @@ const STATUS_COLORS = {
   "LIBERADO": "bg-blue-100 text-blue-800 border-blue-300",
   "PENDENCIA": "bg-red-100 text-red-800 border-red-300",
   "SUSPENSO": "bg-pink-100 text-pink-800 border-pink-300",
-  "DEFINIR": "bg-purple-100 text-purple-800 border-purple-300"
+  "DEFINIR": "bg-purple-100 text-purple-800 border-purple-300",
+  "RESOLVIDO": "bg-green-100 text-green-800 border-green-300"
 };
 
 const Dashboard = () => {
