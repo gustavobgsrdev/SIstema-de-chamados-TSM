@@ -181,10 +181,14 @@ const Dashboard = () => {
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-9 gap-3 mb-6">
           <div className="bg-white rounded-lg shadow-sm p-4 border-l-4 border-slate-500">
             <p className="text-xs text-slate-600 mb-1">Total</p>
             <p className="text-2xl font-bold text-slate-800">{stats.total || 0}</p>
+          </div>
+          <div className="bg-orange-50 rounded-lg shadow-sm p-4 border-l-4 border-orange-500">
+            <p className="text-xs text-orange-700 mb-1 font-semibold">Urgente</p>
+            <p className="text-2xl font-bold text-orange-900">{stats.URGENTE || 0}</p>
           </div>
           <div className="bg-yellow-50 rounded-lg shadow-sm p-4 border-l-4 border-yellow-500">
             <p className="text-xs text-yellow-700 mb-1">Abertos</p>
