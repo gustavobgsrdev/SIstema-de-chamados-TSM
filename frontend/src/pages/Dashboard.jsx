@@ -249,7 +249,7 @@ const Dashboard = () => {
 
         {/* Filters Bar */}
         <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <div className="relative md:col-span-2">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
               <Input
@@ -266,7 +266,7 @@ const Dashboard = () => {
                 <SelectValue placeholder="Situação" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value=" ">Todas</SelectItem>
+                <SelectItem value="">Todas</SelectItem>
                 <SelectItem value="URGENTE">URGENTE</SelectItem>
                 <SelectItem value="ABERTO">ABERTO</SelectItem>
                 <SelectItem value="EM ROTA">EM ROTA</SelectItem>
@@ -284,6 +284,8 @@ const Dashboard = () => {
               onChange={(e) => setPatFilter(e.target.value)}
               data-testid="pat-filter"
             />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <Input
               type="text"
               placeholder="Nº Série"
@@ -298,6 +300,24 @@ const Dashboard = () => {
               onChange={(e) => setUnitFilter(e.target.value)}
               data-testid="unit-filter"
             />
+            <div>
+              <Input
+                type="date"
+                placeholder="Data Início"
+                value={dateStart}
+                onChange={(e) => setDateStart(e.target.value)}
+                data-testid="date-start-filter"
+              />
+            </div>
+            <div>
+              <Input
+                type="date"
+                placeholder="Data Fim"
+                value={dateEnd}
+                onChange={(e) => setDateEnd(e.target.value)}
+                data-testid="date-end-filter"
+              />
+            </div>
           </div>
           <div className="flex gap-2">
             <Button
