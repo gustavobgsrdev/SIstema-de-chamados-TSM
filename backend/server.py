@@ -75,7 +75,7 @@ class ServiceOrder(BaseModel):
     ticket_number: Optional[str] = None
     os_number: Optional[str] = None
     pat: Optional[str] = None
-    status: Optional[str] = "ABERTO"  # ABERTO, EM ROTA, LIBERADO, PENDENCIA, SUSPENSO, DEFINIR
+    status: Optional[str] = "ABERTO"  # ABERTO, EM ROTA, LIBERADO, PENDENCIA, SUSPENSO, DEFINIR, RESOLVIDO
     opening_date: Optional[str] = None
     responsible_opening: Optional[str] = None
     responsible_tech: Optional[str] = None
