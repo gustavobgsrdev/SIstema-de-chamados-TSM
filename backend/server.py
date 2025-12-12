@@ -431,6 +431,7 @@ async def get_service_orders_stats(current_user: User = Depends(get_current_user
     results = await db.service_orders.aggregate(pipeline).to_list(None)
     
     stats = {
+        "URGENTE": 0,
         "ABERTO": 0,
         "EM ROTA": 0,
         "LIBERADO": 0,
