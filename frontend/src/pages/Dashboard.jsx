@@ -32,6 +32,8 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [patFilter, setPatFilter] = useState("");
+  const [serialFilter, setSerialFilter] = useState("");
+  const [unitFilter, setUnitFilter] = useState("");
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
