@@ -235,7 +235,7 @@ const CreateServiceOrder = () => {
           {/* Informações Básicas */}
           <div className="bg-white rounded-xl shadow-sm p-6">
             <h2 className="text-lg font-semibold text-slate-800 mb-4">Informações Básicas</h2>
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-3 gap-4 mb-4">
               <div>
                 <Label htmlFor="ticket_number">Nº do Chamado</Label>
                 <Input
@@ -262,6 +262,24 @@ const CreateServiceOrder = () => {
                   onChange={(e) => updateField("pat", e.target.value)}
                   data-testid="pat-input"
                 />
+              </div>
+            </div>
+            <div className="grid md:grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="status">Situação</Label>
+                <Select value={formData.status} onValueChange={(value) => updateField("status", value)}>
+                  <SelectTrigger data-testid="status-select">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ABERTO">ABERTO</SelectItem>
+                    <SelectItem value="EM ROTA">EM ROTA</SelectItem>
+                    <SelectItem value="LIBERADO">LIBERADO</SelectItem>
+                    <SelectItem value="PENDENCIA">PENDÊNCIA</SelectItem>
+                    <SelectItem value="SUSPENSO">SUSPENSO</SelectItem>
+                    <SelectItem value="DEFINIR">DEFINIR</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <Label htmlFor="opening_date">Data de Abertura</Label>
