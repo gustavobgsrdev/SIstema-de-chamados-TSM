@@ -80,6 +80,16 @@ function App() {
               )
             }
           />
+          <Route
+            path="/users"
+            element={
+              isAuthenticated ? (
+                <UserManagement />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
           <Route path="/" element={<Navigate to="/dashboard" />} />
         </Routes>
       </BrowserRouter>
