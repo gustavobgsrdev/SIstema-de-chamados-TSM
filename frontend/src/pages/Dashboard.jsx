@@ -163,6 +163,18 @@ const Dashboard = () => {
             </div>
             <div className="flex items-center gap-4">
               <span className="text-sm text-slate-600">Olá, {user?.name}</span>
+              {user?.role === "ADMIN" && (
+                <Button
+                  onClick={() => navigate("/users")}
+                  variant="ghost"
+                  size="sm"
+                  className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                  data-testid="manage-users-button"
+                >
+                  <Users className="w-4 h-4 mr-2" />
+                  Usuários
+                </Button>
+              )}
               <Button
                 onClick={handleLogout}
                 variant="ghost"
