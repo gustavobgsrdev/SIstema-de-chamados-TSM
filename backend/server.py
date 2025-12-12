@@ -381,7 +381,9 @@ async def get_service_orders(
     status: Optional[str] = None,
     pat: Optional[str] = None,
     ticket_number: Optional[str] = None,
-    os_number: Optional[str] = None
+    os_number: Optional[str] = None,
+    equipment_serial: Optional[str] = None,
+    unit: Optional[str] = None
 ):
     # Build filter
     filter_query = {}
@@ -393,6 +395,10 @@ async def get_service_orders(
         filter_query['ticket_number'] = {"$regex": ticket_number, "$options": "i"}
     if os_number:
         filter_query['os_number'] = {"$regex": os_number, "$options": "i"}
+    if equipment_serial:
+        filter_query['equipment_serial'] = {"$regex": equipment_serial, "$options": "i"}
+    if unit:
+        filter_query['unit'] = {"$regex": unit, "$options": "i"}
     
     orders = await db.service_orders.find(filter_query, {"_id": 0}).to_list(1000)
     
