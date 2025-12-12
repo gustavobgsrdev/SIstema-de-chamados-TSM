@@ -180,7 +180,7 @@ const Dashboard = () => {
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
           <div className="bg-white rounded-lg shadow-sm p-4 border-l-4 border-slate-500">
             <p className="text-xs text-slate-600 mb-1">Total</p>
             <p className="text-2xl font-bold text-slate-800">{stats.total || 0}</p>
@@ -208,6 +208,10 @@ const Dashboard = () => {
           <div className="bg-purple-50 rounded-lg shadow-sm p-4 border-l-4 border-purple-500">
             <p className="text-xs text-purple-700 mb-1">Definir</p>
             <p className="text-2xl font-bold text-purple-800">{stats.DEFINIR || 0}</p>
+          </div>
+          <div className="bg-green-50 rounded-lg shadow-sm p-4 border-l-4 border-green-500">
+            <p className="text-xs text-green-700 mb-1">Resolvido</p>
+            <p className="text-2xl font-bold text-green-800">{stats.RESOLVIDO || 0}</p>
           </div>
         </div>
 
