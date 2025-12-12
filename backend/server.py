@@ -44,7 +44,7 @@ class UserCreate(BaseModel):
     role: str = "USER"
 
 class UserLogin(BaseModel):
-    email: EmailStr
+    email: str  # Username
     password: str
 
 class User(BaseModel):
