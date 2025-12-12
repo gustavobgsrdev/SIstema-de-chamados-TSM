@@ -337,11 +337,11 @@ const Dashboard = () => {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="text-lg font-semibold text-slate-800">
-                        O.S. #{order.os_number || "S/N"}
+                        Chamado #{order.ticket_number || "S/N"}
                       </h3>
-                      {order.ticket_number && (
+                      {order.os_number && (
                         <span className="text-sm text-slate-600 bg-slate-100 px-2 py-1 rounded">
-                          Chamado: {order.ticket_number}
+                          O.S.: {order.os_number}
                         </span>
                       )}
                       <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${STATUS_COLORS[order.status || "ABERTO"]}`}>
