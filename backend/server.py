@@ -501,34 +501,38 @@ async def get_service_orders_stats(current_user: User = Depends(get_current_user
 
 @api_router.get("/service-orders/export")
 async def export_service_orders(current_user: User = Depends(get_current_user)):
-    """Export service orders to CSV"""
+    """Export service orders to CSV with UTF-8 BOM for Excel"""
     from fastapi.responses import StreamingResponse
     import io
     
-    # Get all orders
-    orders = await db.service_orders.find({}, {"_id": 0}).to_list(1000)
+    # Get all orders sorted
+    orders = await db.service_orders.find({}, {"_id": 0}).sort("created_at", 1).to_list(1000)
     
-    # Create CSV content
-    csv_content = "N° CHAMADO,N° OS,PAT,CLIENTE,UNIDADE,DATA,SITUAÇÃO\n"
+    # Separate urgent orders
+    urgent_orders = [o for o in orders if o.get('status') == 'URGENTE']
+    normal_orders = [o for o in orders if o.get('status') != 'URGENTE']
+    all_orders = urgent_orders + normal_orders
     
-    for order in orders:
-        ticket_number = order.get('ticket_number', '')
-        os_number = order.get('os_number', '')
-        pat = order.get('pat', '')
-        client_name = order.get('client_name', '')
-        unit = order.get('unit', '')
-        opening_date = order.get('opening_date', '')
-        status = order.get('status', 'ABERTO')
+    # Create CSV content with BOM for Excel
+    csv_content = "\ufeff"  # UTF-8 BOM
+    csv_content += "N° CHAMADO;N° OS;PAT;CLIENTE;UNIDADE;DATA;SITUAÇÃO\n"
+    
+    for order in all_orders:
+        ticket_number = str(order.get('ticket_number', '')).replace(';', ',')
+        os_number = str(order.get('os_number', '')).replace(';', ',')
+        pat = str(order.get('pat', '')).replace(';', ',')
+        client_name = str(order.get('client_name', '')).replace(';', ',')
+        unit = str(order.get('unit', '')).replace(';', ',')
+        opening_date = str(order.get('opening_date', '')).replace(';', ',')
+        status = str(order.get('status', 'ABERTO')).replace(';', ',')
         
-        # Escape commas in fields
-        csv_content += f'"{ticket_number}","{os_number}","{pat}","{client_name}","{unit}","{opening_date}","{status}"\n'
+        # Use semicolon for Excel
+        csv_content += f"{ticket_number};{os_number};{pat};{client_name};{unit};{opening_date};{status}\n"
     
     # Create streaming response
-    stream = io.StringIO(csv_content)
-    
     return StreamingResponse(
-        iter([stream.getvalue()]),
-        media_type="text/csv",
+        iter([csv_content.encode('utf-8')]),
+        media_type="text/csv; charset=utf-8",
         headers={
             "Content-Disposition": "attachment; filename=relatorio_ordens_servico.csv"
         }
