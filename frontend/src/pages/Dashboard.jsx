@@ -365,12 +365,12 @@ const Dashboard = () => {
                   const url = window.URL.createObjectURL(blob);
                   const a = document.createElement("a");
                   a.href = url;
-                  a.download = "relatorio_ordens_servico.csv";
+                  a.download = "relatorio_ordens_servico.xlsx";
                   document.body.appendChild(a);
                   a.click();
                   window.URL.revokeObjectURL(url);
                   document.body.removeChild(a);
-                  toast.success("Relatório exportado com sucesso!");
+                  toast.success("Relatório Excel exportado com sucesso!");
                 } catch (error) {
                   toast.error("Erro ao exportar relatório");
                 }
