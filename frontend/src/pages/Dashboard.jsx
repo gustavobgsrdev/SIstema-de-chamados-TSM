@@ -410,10 +410,20 @@ const Dashboard = () => {
             <Button
               onClick={async () => {
                 try {
+                  if (filteredOrders.length === 0) {
+                    toast.error("Nenhuma O.S. para exportar");
+                    return;
+                  }
+
                   const token = localStorage.getItem("token");
-                  const response = await fetch(`${API}/service-orders/export`, {
+                  
+                  // Send filtered order IDs
+                  const orderIds = filteredOrders.map(o => o.id).join(",");
+                  
+                  const response = await fetch(`${API}/service-orders/export?ids=${orderIds}`, {
                     headers: { Authorization: `Bearer ${token}` }
                   });
+                  
                   const blob = await response.blob();
                   const url = window.URL.createObjectURL(blob);
                   const a = document.createElement("a");
@@ -423,7 +433,7 @@ const Dashboard = () => {
                   a.click();
                   window.URL.revokeObjectURL(url);
                   document.body.removeChild(a);
-                  toast.success("Relatório Excel exportado com sucesso!");
+                  toast.success(`${filteredOrders.length} O.S. exportadas com sucesso!`);
                 } catch (error) {
                   toast.error("Erro ao exportar relatório");
                 }
@@ -433,7 +443,7 @@ const Dashboard = () => {
               data-testid="export-button"
             >
               <FileText className="w-4 h-4 mr-2" />
-              Exportar Excel
+              Exportar Excel ({filteredOrders.length})
             </Button>
           </div>
         </div>
