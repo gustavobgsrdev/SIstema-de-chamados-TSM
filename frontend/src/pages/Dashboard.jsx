@@ -68,6 +68,12 @@ const Dashboard = () => {
     applyFilters();
   }, [searchTerm, statusFilter, patFilter, serialFilter, unitFilter, dateStart, dateEnd, orders]);
 
+  // Recalculate stats whenever filtered orders change
+  useEffect(() => {
+    const newStats = calculateStats(filteredOrders);
+    setStats(newStats);
+  }, [filteredOrders]);
+
   const loadOrders = async () => {
     try {
       const token = localStorage.getItem("token");
