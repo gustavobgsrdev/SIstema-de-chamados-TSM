@@ -500,20 +500,42 @@ async def get_service_orders_stats(current_user: User = Depends(get_current_user
     return stats
 
 @api_router.get("/service-orders/export")
-async def export_service_orders(current_user: User = Depends(get_current_user)):
-    """Export service orders to formatted Excel"""
+async def export_service_orders(
+    current_user: User = Depends(get_current_user),
+    ids: Optional[str] = None
+):
+    """Export filtered service orders to formatted Excel"""
     from fastapi.responses import StreamingResponse
     from openpyxl import Workbook
     from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
     import io
     
-    # Get all orders sorted
-    orders = await db.service_orders.find({}, {"_id": 0}).sort("created_at", 1).to_list(1000)
-    
-    # Separate urgent orders
-    urgent_orders = [o for o in orders if o.get('status') == 'URGENTE']
-    normal_orders = [o for o in orders if o.get('status') != 'URGENTE']
-    all_orders = urgent_orders + normal_orders
+    # Get orders based on IDs or all
+    if ids:
+        # Split IDs and get specific orders
+        id_list = ids.split(",")
+        orders = await db.service_orders.find(
+            {"id": {"$in": id_list}}, 
+            {"_id": 0}
+        ).to_list(1000)
+        
+        # Sort to maintain urgente first, then by creation
+        urgent_orders = [o for o in orders if o.get('status') == 'URGENTE']
+        normal_orders = [o for o in orders if o.get('status') != 'URGENTE']
+        
+        # Sort each group by created_at
+        urgent_orders.sort(key=lambda x: x.get('created_at', ''))
+        normal_orders.sort(key=lambda x: x.get('created_at', ''))
+        
+        all_orders = urgent_orders + normal_orders
+    else:
+        # Get all orders sorted
+        orders = await db.service_orders.find({}, {"_id": 0}).sort("created_at", 1).to_list(1000)
+        
+        # Separate urgent orders
+        urgent_orders = [o for o in orders if o.get('status') == 'URGENTE']
+        normal_orders = [o for o in orders if o.get('status') != 'URGENTE']
+        all_orders = urgent_orders + normal_orders
     
     # Create workbook
     wb = Workbook()
