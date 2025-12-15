@@ -84,16 +84,28 @@ const Dashboard = () => {
     }
   };
 
-  const loadStats = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`${API}/service-orders/stats`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setStats(response.data);
-    } catch (error) {
-      console.error("Erro ao carregar estatísticas");
-    }
+  const calculateStats = (ordersList) => {
+    const statsData = {
+      URGENTE: 0,
+      ABERTO: 0,
+      "EM ROTA": 0,
+      LIBERADO: 0,
+      PENDENCIA: 0,
+      SUSPENSO: 0,
+      DEFINIR: 0,
+      RESOLVIDO: 0,
+      total: 0
+    };
+
+    ordersList.forEach(order => {
+      const status = order.status || "ABERTO";
+      if (statsData.hasOwnProperty(status)) {
+        statsData[status]++;
+      }
+    });
+
+    statsData.total = ordersList.length;
+    return statsData;
   };
 
   const applyFilters = () => {
