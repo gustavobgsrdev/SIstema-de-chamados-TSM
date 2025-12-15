@@ -29,14 +29,32 @@ const Dashboard = () => {
   const [stats, setStats] = useState({});
   const [user, setUser] = useState(null);
   
+  // Get current month dates
+  const getCurrentMonthDates = () => {
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    
+    const formatDate = (date) => {
+      return date.toISOString().split('T')[0];
+    };
+    
+    return {
+      start: formatDate(firstDay),
+      end: formatDate(lastDay)
+    };
+  };
+
+  const defaultDates = getCurrentMonthDates();
+
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [patFilter, setPatFilter] = useState("");
   const [serialFilter, setSerialFilter] = useState("");
   const [unitFilter, setUnitFilter] = useState("");
-  const [dateStart, setDateStart] = useState("");
-  const [dateEnd, setDateEnd] = useState("");
+  const [dateStart, setDateStart] = useState(defaultDates.start);
+  const [dateEnd, setDateEnd] = useState(defaultDates.end);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
