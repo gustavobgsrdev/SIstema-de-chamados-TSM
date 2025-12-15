@@ -501,8 +501,10 @@ async def get_service_orders_stats(current_user: User = Depends(get_current_user
 
 @api_router.get("/service-orders/export")
 async def export_service_orders(current_user: User = Depends(get_current_user)):
-    """Export service orders to CSV with UTF-8 BOM for Excel"""
+    """Export service orders to formatted Excel"""
     from fastapi.responses import StreamingResponse
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
     import io
     
     # Get all orders sorted
@@ -513,28 +515,70 @@ async def export_service_orders(current_user: User = Depends(get_current_user)):
     normal_orders = [o for o in orders if o.get('status') != 'URGENTE']
     all_orders = urgent_orders + normal_orders
     
-    # Create CSV content with BOM for Excel
-    csv_content = "\ufeff"  # UTF-8 BOM
-    csv_content += "N° CHAMADO;N° OS;PAT;CLIENTE;UNIDADE;DATA;SITUAÇÃO\n"
+    # Create workbook
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Relatório O.S."
     
+    # Define styles
+    header_fill = PatternFill(start_color="92D050", end_color="92D050", fill_type="solid")  # Green
+    header_font = Font(bold=True, color="000000", size=11)
+    header_alignment = Alignment(horizontal="center", vertical="center")
+    
+    border_style = Border(
+        left=Side(style='thin', color='000000'),
+        right=Side(style='thin', color='000000'),
+        top=Side(style='thin', color='000000'),
+        bottom=Side(style='thin', color='000000')
+    )
+    
+    cell_alignment = Alignment(horizontal="center", vertical="center")
+    
+    # Headers
+    headers = ["N° CHAMADO", "N° OS", "PAT", "CLIENTE", "UNIDADE", "DATA", "SITUAÇÃO"]
+    ws.append(headers)
+    
+    # Style header row
+    for cell in ws[1]:
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = header_alignment
+        cell.border = border_style
+    
+    # Add data
     for order in all_orders:
-        ticket_number = str(order.get('ticket_number', '')).replace(';', ',')
-        os_number = str(order.get('os_number', '')).replace(';', ',')
-        pat = str(order.get('pat', '')).replace(';', ',')
-        client_name = str(order.get('client_name', '')).replace(';', ',')
-        unit = str(order.get('unit', '')).replace(';', ',')
-        opening_date = str(order.get('opening_date', '')).replace(';', ',')
-        status = str(order.get('status', 'ABERTO')).replace(';', ',')
-        
-        # Use semicolon for Excel
-        csv_content += f"{ticket_number};{os_number};{pat};{client_name};{unit};{opening_date};{status}\n"
+        row = [
+            str(order.get('ticket_number', '')),
+            str(order.get('os_number', '')),
+            str(order.get('pat', '')),
+            str(order.get('client_name', '')),
+            str(order.get('unit', '')),
+            str(order.get('opening_date', '')),
+            str(order.get('status', 'ABERTO'))
+        ]
+        ws.append(row)
     
-    # Create streaming response
+    # Style data rows
+    for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=7):
+        for cell in row:
+            cell.border = border_style
+            cell.alignment = cell_alignment
+    
+    # Adjust column widths
+    column_widths = [15, 10, 12, 30, 20, 12, 15]
+    for i, width in enumerate(column_widths, 1):
+        ws.column_dimensions[chr(64 + i)].width = width
+    
+    # Save to BytesIO
+    excel_file = io.BytesIO()
+    wb.save(excel_file)
+    excel_file.seek(0)
+    
     return StreamingResponse(
-        iter([csv_content.encode('utf-8')]),
-        media_type="text/csv; charset=utf-8",
+        iter([excel_file.getvalue()]),
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         headers={
-            "Content-Disposition": "attachment; filename=relatorio_ordens_servico.csv"
+            "Content-Disposition": "attachment; filename=relatorio_ordens_servico.xlsx"
         }
     )
 
