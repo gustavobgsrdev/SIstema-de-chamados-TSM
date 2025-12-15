@@ -62,7 +62,6 @@ const Dashboard = () => {
       setUser(JSON.parse(userData));
     }
     loadOrders();
-    loadStats();
   }, []);
 
   useEffect(() => {
