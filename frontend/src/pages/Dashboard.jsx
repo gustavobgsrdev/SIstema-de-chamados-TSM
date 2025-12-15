@@ -135,15 +135,23 @@ const Dashboard = () => {
       );
     }
 
-    // Date range filter
+    // Special date filter logic:
+    // - RESOLVIDO: only show within date range
+    // - Other statuses: always show regardless of date
     if (dateStart || dateEnd) {
       filtered = filtered.filter(order => {
-        if (!order.opening_date) return false;
-        const orderDate = order.opening_date;
+        // If status is RESOLVIDO, apply date filter
+        if (order.status === 'RESOLVIDO') {
+          if (!order.opening_date) return false;
+          const orderDate = order.opening_date;
+          
+          if (dateStart && orderDate < dateStart) return false;
+          if (dateEnd && orderDate > dateEnd) return false;
+          
+          return true;
+        }
         
-        if (dateStart && orderDate < dateStart) return false;
-        if (dateEnd && orderDate > dateEnd) return false;
-        
+        // For all other statuses, show regardless of date
         return true;
       });
     }
