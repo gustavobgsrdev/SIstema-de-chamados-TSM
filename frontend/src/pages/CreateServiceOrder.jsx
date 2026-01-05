@@ -60,6 +60,7 @@ const CreateServiceOrder = () => {
     next_visit: "",
     equipment_replaced: false,
     observations: "",
+    verification_mode: "DIGITAL",
     verifications: VERIFICATION_ITEMS.map(item => ({
       item,
       status: "N/A",
