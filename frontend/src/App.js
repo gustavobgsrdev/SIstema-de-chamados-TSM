@@ -8,15 +8,23 @@ import EditServiceOrder from "./pages/EditServiceOrder";
 import ViewServiceOrder from "./pages/ViewServiceOrder";
 import UserManagement from "./pages/UserManagement";
 
-// Suppress ResizeObserver errors
-const resizeObserverErrorHandler = (e) => {
-  if (e.message === 'ResizeObserver loop completed with undelivered notifications.') {
-    const resizeObserverError = e;
+// Suppress ResizeObserver errors (safe to ignore - caused by Radix UI)
+window.addEventListener('error', e => {
+  if (e.message === 'ResizeObserver loop completed with undelivered notifications.' ||
+      e.message === 'ResizeObserver loop limit exceeded') {
+    e.stopImmediatePropagation();
+    e.preventDefault();
+  }
+});
+
+// Also suppress in console
+const resizeObserverLoopErrRe = /^[^(ResizeObserver loop limit exceeded)]/;
+const resizeObserverLoopErrRe2 = /^[^(ResizeObserver loop completed)]/;
+window.addEventListener('error', (e) => {
+  if (resizeObserverLoopErrRe.test(e.message) || resizeObserverLoopErrRe2.test(e.message)) {
     e.stopImmediatePropagation();
   }
-};
-
-window.addEventListener('error', resizeObserverErrorHandler);
+});
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
