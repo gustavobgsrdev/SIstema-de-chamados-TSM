@@ -102,6 +102,7 @@ class ServiceOrder(BaseModel):
     
     # Verificações
     verifications: List[Verification] = Field(default_factory=list)
+    verification_mode: Optional[str] = "DIGITAL"  # DIGITAL or MANUAL
     
     # Contadores e pendências
     total_page_count: Optional[str] = None
