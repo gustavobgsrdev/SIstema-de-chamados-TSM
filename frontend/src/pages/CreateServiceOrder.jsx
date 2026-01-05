@@ -463,39 +463,70 @@ const CreateServiceOrder = () => {
 
           {/* Verificações */}
           <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-slate-800 mb-4">Verificações</h2>
-            <div className="space-y-4">
-              {formData.verifications.map((verification, index) => (
-                <div key={index} className="grid md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-lg">
-                  <div className="md:col-span-1 flex items-center">
-                    <Label className="text-sm font-medium">{verification.item}</Label>
-                  </div>
-                  <div>
-                    <Select
-                      value={verification.status}
-                      onValueChange={(value) => updateVerification(index, "status", value)}
-                    >
-                      <SelectTrigger data-testid={`verification-status-${index}`}>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="BOA">BOA</SelectItem>
-                        <SelectItem value="RUIM">RUIM</SelectItem>
-                        <SelectItem value="N/A">N/A</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Input
-                      placeholder="Observação"
-                      value={verification.observation}
-                      onChange={(e) => updateVerification(index, "observation", e.target.value)}
-                      data-testid={`verification-observation-${index}`}
-                    />
-                  </div>
-                </div>
-              ))}
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-slate-800">Verificações</h2>
+              <div className="flex items-center gap-3">
+                <Label className="text-sm">Modo de Preenchimento:</Label>
+                <Select value={formData.verification_mode} onValueChange={(value) => updateField("verification_mode", value)}>
+                  <SelectTrigger className="w-40" data-testid="verification-mode-select">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="DIGITAL">Digital</SelectItem>
+                    <SelectItem value="MANUAL">Manual (Caneta)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
+            
+            {formData.verification_mode === "DIGITAL" ? (
+              <div className="space-y-4">
+                {formData.verifications.map((verification, index) => (
+                  <div key={index} className="grid md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-lg">
+                    <div className="md:col-span-1 flex items-center">
+                      <Label className="text-sm font-medium">{verification.item}</Label>
+                    </div>
+                    <div>
+                      <Select
+                        value={verification.status}
+                        onValueChange={(value) => updateVerification(index, "status", value)}
+                      >
+                        <SelectTrigger data-testid={`verification-status-${index}`}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="BOA">BOA</SelectItem>
+                          <SelectItem value="RUIM">RUIM</SelectItem>
+                          <SelectItem value="N/A">N/A</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Input
+                        placeholder="Observação"
+                        value={verification.observation}
+                        onChange={(e) => updateVerification(index, "observation", e.target.value)}
+                        data-testid={`verification-observation-${index}`}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="border border-slate-300 rounded-lg p-4 bg-slate-50">
+                <div className="text-center text-sm text-slate-600 mb-4 font-medium">
+                  Modo Manual: Preencher à caneta na impressão | Legenda: BOA | RUIM
+                </div>
+                <div className="space-y-2">
+                  {VERIFICATION_ITEMS.map((item, index) => (
+                    <div key={index} className="flex items-center justify-between p-2 bg-white border border-slate-200 rounded">
+                      <span className="text-sm font-medium text-slate-700">{item}</span>
+                      <span className="text-xs text-slate-400">_________________</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Informações Finais */}
