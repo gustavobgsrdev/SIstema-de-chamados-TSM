@@ -167,6 +167,7 @@ class ServiceOrderUpdate(BaseModel):
     materials: Optional[str] = None
     technical_report: Optional[str] = None
     verifications: Optional[List[Verification]] = None
+    verification_mode: Optional[str] = None
     total_page_count: Optional[str] = None
     pending_issues: Optional[str] = None
     next_visit: Optional[str] = None
