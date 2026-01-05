@@ -8,6 +8,16 @@ import EditServiceOrder from "./pages/EditServiceOrder";
 import ViewServiceOrder from "./pages/ViewServiceOrder";
 import UserManagement from "./pages/UserManagement";
 
+// Suppress ResizeObserver errors
+const resizeObserverErrorHandler = (e) => {
+  if (e.message === 'ResizeObserver loop completed with undelivered notifications.') {
+    const resizeObserverError = e;
+    e.stopImmediatePropagation();
+  }
+};
+
+window.addEventListener('error', resizeObserverErrorHandler);
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
