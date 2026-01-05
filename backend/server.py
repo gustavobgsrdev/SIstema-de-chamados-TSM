@@ -139,6 +139,7 @@ class ServiceOrderCreate(BaseModel):
     materials: Optional[str] = None
     technical_report: Optional[str] = None
     verifications: List[Verification] = Field(default_factory=list)
+    verification_mode: Optional[str] = "DIGITAL"
     total_page_count: Optional[str] = None
     pending_issues: Optional[str] = None
     next_visit: Optional[str] = None
