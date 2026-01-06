@@ -236,42 +236,71 @@ const ViewServiceOrder = () => {
 
           {/* Verifications */}
           <h3 style={{ fontSize: '10pt', fontWeight: 'bold', margin: '8px 0 4px 0', textTransform: 'uppercase' }}>Verificações</h3>
-          <table className="print-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '7.5pt', marginBottom: '8px' }}>
-            <thead>
-              <tr>
-                <th style={{ border: '1px solid #000', padding: '3px 5px', backgroundColor: '#cbd5e1', textAlign: 'left' }}>Item Verificado</th>
-                <th style={{ border: '1px solid #000', padding: '3px 5px', backgroundColor: '#cbd5e1', width: '15%', textAlign: 'center' }}>Situação</th>
-                <th style={{ border: '1px solid #000', padding: '3px 5px', backgroundColor: '#cbd5e1', width: '30%', textAlign: 'left' }}>Observações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {order.verifications && order.verifications.length > 0 ? (
-                order.verifications.map((verification, index) => (
-                  <tr key={index}>
-                    <td style={{ border: '1px solid #000', padding: '2px 5px', fontSize: '7pt' }}>{verification.item}</td>
-                    <td style={{ border: '1px solid #000', padding: '2px 5px', textAlign: 'center' }}>
-                      <span style={{
-                        display: 'inline-block',
-                        padding: '1px 6px',
-                        borderRadius: '3px',
-                        fontSize: '7pt',
-                        fontWeight: 'bold',
-                        backgroundColor: verification.status === 'BOA' ? '#d1fae5' : verification.status === 'RUIM' ? '#fee2e2' : '#f1f5f9',
-                        color: verification.status === 'BOA' ? '#065f46' : verification.status === 'RUIM' ? '#991b1b' : '#475569'
-                      }}>
-                        {verification.status}
-                      </span>
-                    </td>
-                    <td style={{ border: '1px solid #000', padding: '2px 5px', fontSize: '7pt' }}>{verification.observation || ''}</td>
+          
+          {order.verification_mode === 'MANUAL' ? (
+            // Manual mode - blank fields for pen
+            <div>
+              <div style={{ textAlign: 'center', fontSize: '9pt', fontWeight: 'bold', marginBottom: '8px', padding: '4px', backgroundColor: '#f8fafc', border: '1px solid #cbd5e1' }}>
+                Legenda: BOA | RUIM
+              </div>
+              <table className="print-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8pt', marginBottom: '8px' }}>
+                <tbody>
+                  {VERIFICATION_ITEMS.map((item, index) => (
+                    <tr key={index}>
+                      <td style={{ border: '1px solid #000', padding: '6px 8px', width: '70%' }}>{item}</td>
+                      <td style={{ border: '1px solid #000', padding: '6px 8px', textAlign: 'center', backgroundColor: '#f9fafb' }}>
+                        {/* Blank space for handwritten check */}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            // Digital mode - show filled data
+            order.verifications && order.verifications.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="print-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '7.5pt', marginBottom: '8px' }}>
+                  <thead>
+                    <tr>
+                      <th style={{ border: '1px solid #000', padding: '3px 5px', backgroundColor: '#cbd5e1', textAlign: 'left' }}>Item Verificado</th>
+                      <th style={{ border: '1px solid #000', padding: '3px 5px', backgroundColor: '#cbd5e1', width: '15%', textAlign: 'center' }}>Situação</th>
+                      <th style={{ border: '1px solid #000', padding: '3px 5px', backgroundColor: '#cbd5e1', width: '30%', textAlign: 'left' }}>Observações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {order.verifications.map((verification, index) => (
+                      <tr key={index}>
+                        <td style={{ border: '1px solid #000', padding: '2px 5px', fontSize: '7pt' }}>{verification.item}</td>
+                        <td style={{ border: '1px solid #000', padding: '2px 5px', textAlign: 'center' }}>
+                          <span style={{
+                            display: 'inline-block',
+                            padding: '1px 6px',
+                            borderRadius: '3px',
+                            fontSize: '7pt',
+                            fontWeight: 'bold',
+                            backgroundColor: verification.status === 'BOA' ? '#d1fae5' : verification.status === 'RUIM' ? '#fee2e2' : '#f1f5f9',
+                            color: verification.status === 'BOA' ? '#065f46' : verification.status === 'RUIM' ? '#991b1b' : '#475569'
+                          }}>
+                            {verification.status}
+                          </span>
+                        </td>
+                        <td style={{ border: '1px solid #000', padding: '2px 5px', fontSize: '7pt' }}>{verification.observation || ''}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <table className="print-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8pt', marginBottom: '8px' }}>
+                <tbody>
+                  <tr>
+                    <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'center', color: '#64748b' }}>Nenhuma verificação registrada</td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="3" style={{ border: '1px solid #000', padding: '8px', textAlign: 'center', color: '#64748b' }}>Nenhuma verificação registrada</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                </tbody>
+              </table>
+            )
+          )}
 
           {/* Final Info */}
           <table className="print-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8.5pt', marginBottom: '8px' }}>
