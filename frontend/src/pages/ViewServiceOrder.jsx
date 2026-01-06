@@ -9,6 +9,17 @@ import "./ViewServiceOrder.css";
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+const VERIFICATION_ITEMS = [
+  "Limpeza Externa",
+  "Limpeza Interna",
+  "Teste de Impressão",
+  "Verificação de Conectividade",
+  "Atualização de Driver",
+  "Verificação de Suprimentos",
+  "Teste de Funcionalidades",
+  "Verificação de Configurações"
+];
+
 const ViewServiceOrder = () => {
   const navigate = useNavigate();
   const { id } = useParams();
