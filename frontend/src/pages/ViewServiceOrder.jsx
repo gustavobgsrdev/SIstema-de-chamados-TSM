@@ -10,14 +10,19 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const VERIFICATION_ITEMS = [
-  "Limpeza Externa",
-  "Limpeza Interna",
-  "Teste de Impressão",
-  "Verificação de Conectividade",
-  "Atualização de Driver",
-  "Verificação de Suprimentos",
-  "Teste de Funcionalidades",
-  "Verificação de Configurações"
+  "IMPRESSÃO/XEROX",
+  "DIGITALIZAÇÃO",
+  "REDE/USB",
+  "ADF / DUPLEX (ADF)",
+  "TIPO CONEXÃO - REDE/WIFI/USB",
+  "PAINEL/APARDOR DE PAPEL",
+  "PELICULA FUSORA/ROLO PRESSOR/ROLO FUSOR",
+  "PICK ROLER BAND 1/2",
+  "BANDEJA 1/2",
+  "ETIQUETAS DE IDENTIFICAÇÃO",
+  "PATRIMONIO",
+  "CABO FORÇA E USB",
+  "CARTUCHO SOBRESSALENTE"
 ];
 
 const ViewServiceOrder = () => {
