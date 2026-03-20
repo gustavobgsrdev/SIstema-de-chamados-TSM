@@ -381,6 +381,63 @@ async def get_users(current_user: User = Depends(get_current_user)):
     
     return users
 
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None  # Username
+    password: Optional[str] = None
+    role: Optional[str] = None
+
+@api_router.put("/users/{user_id}", response_model=User)
+async def update_user(
+    user_id: str,
+    user_data: UserUpdate,
+    current_user: User = Depends(get_current_user)
+):
+    if current_user.role != "ADMIN":
+        raise HTTPException(status_code=403, detail="Only administrators can update users")
+    
+    # Cannot update yourself
+    if user_id == current_user.id:
+        raise HTTPException(status_code=400, detail="Cannot update your own account here")
+    
+    # Check if user exists
+    existing_user = await db.users.find_one({"id": user_id})
+    if not existing_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Build update data
+    update_data = {}
+    if user_data.name:
+        update_data['name'] = user_data.name
+    if user_data.email:
+        # Check if email/username already exists (for other users)
+        email_check = await db.users.find_one({"email": user_data.email, "id": {"$ne": user_id}})
+        if email_check:
+            raise HTTPException(status_code=400, detail="Username already exists")
+        update_data['email'] = user_data.email
+    if user_data.password:
+        update_data['password'] = hash_password(user_data.password)
+    if user_data.role:
+        update_data['role'] = user_data.role
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    # Update user
+    await db.users.update_one(
+        {"id": user_id},
+        {"$set": update_data}
+    )
+    
+    # Get updated user
+    updated_user = await db.users.find_one({"id": user_id}, {"_id": 0, "password": 0})
+    
+    # Convert ISO string to datetime
+    if isinstance(updated_user.get('created_at'), str):
+        updated_user['created_at'] = datetime.fromisoformat(updated_user['created_at'])
+    
+    return User(**updated_user)
+
 @api_router.delete("/users/{user_id}")
 async def delete_user(user_id: str, current_user: User = Depends(get_current_user)):
     if current_user.role != "ADMIN":
