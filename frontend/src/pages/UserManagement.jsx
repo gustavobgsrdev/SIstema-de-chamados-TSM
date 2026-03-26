@@ -80,6 +80,50 @@ const UserManagement = () => {
     }
   };
 
+  const handleEdit = (user) => {
+    setEditingUser(user);
+    setEditFormData({
+      email: user.email,
+      password: "",
+      name: user.name,
+      role: user.role
+    });
+    setShowEditForm(true);
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const token = localStorage.getItem("token");
+      const updateData = {
+        name: editFormData.name,
+        email: editFormData.email,
+        role: editFormData.role
+      };
+      
+      // Only send password if it was changed
+      if (editFormData.password) {
+        updateData.password = editFormData.password;
+      }
+
+      await axios.put(`${API}/users/${editingUser.id}`, updateData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      toast.success("Usuário atualizado com sucesso!");
+      setShowEditForm(false);
+      setEditingUser(null);
+      setEditFormData({ email: "", password: "", name: "", role: "USER" });
+      loadUsers();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Erro ao atualizar usuário");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDelete = async (userId) => {
     if (!window.confirm("Deseja realmente excluir este usuário?")) return;
 
