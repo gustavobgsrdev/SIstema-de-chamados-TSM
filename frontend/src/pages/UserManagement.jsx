@@ -16,7 +16,15 @@ const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
   const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    name: "",
+    role: "USER"
+  });
+  const [editFormData, setEditFormData] = useState({
     email: "",
     password: "",
     name: "",
