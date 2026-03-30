@@ -186,7 +186,6 @@ const Dashboard = () => {
       });
       toast.success("O.S. excluída com sucesso");
       loadOrders();
-      loadStats();
     } catch (error) {
       toast.error("Erro ao excluir O.S.");
     }
