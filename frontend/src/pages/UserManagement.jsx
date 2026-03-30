@@ -240,6 +240,74 @@ const UserManagement = () => {
           </div>
         )}
 
+        {showEditForm && editingUser && (
+          <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+            <h2 className="text-lg font-semibold text-slate-800 mb-4">Editar Usuário</h2>
+            <form onSubmit={handleUpdate} className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-name">Nome Completo</Label>
+                  <Input
+                    id="edit-name"
+                    value={editFormData.name}
+                    onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                    required
+                    data-testid="edit-user-name-input"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-email">Usuário (Login)</Label>
+                  <Input
+                    id="edit-email"
+                    value={editFormData.email}
+                    onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+                    required
+                    data-testid="edit-user-email-input"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-password">Nova Senha (deixe em branco para manter)</Label>
+                  <Input
+                    id="edit-password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={editFormData.password}
+                    onChange={(e) => setEditFormData({ ...editFormData, password: e.target.value })}
+                    data-testid="edit-user-password-input"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-role">Tipo de Acesso</Label>
+                  <Select value={editFormData.role} onValueChange={(value) => setEditFormData({ ...editFormData, role: value })}>
+                    <SelectTrigger data-testid="edit-user-role-select">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="USER">Usuário Padrão</SelectItem>
+                      <SelectItem value="ADMIN">Administrador</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button type="submit" className="bg-blue-600 hover:bg-blue-700" data-testid="update-user-button">
+                  Atualizar Usuário
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => {
+                    setShowEditForm(false);
+                    setEditingUser(null);
+                  }}
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </form>
+          </div>
+        )}
+
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
           <table className="w-full">
             <thead className="bg-slate-50 border-b border-slate-200">
