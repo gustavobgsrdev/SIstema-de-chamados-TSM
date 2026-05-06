@@ -526,6 +526,28 @@ async def get_service_orders(
     
     return urgent_orders + normal_orders
 
+
+@api_router.get("/service-orders/next-ticket")
+async def get_next_ticket_number(current_user: User = Depends(get_current_user)):
+    """Get the next ticket number (auto-increment)"""
+    # Find the highest numeric ticket_number
+    orders = await db.service_orders.find(
+        {"ticket_number": {"$exists": True, "$ne": None, "$ne": ""}},
+        {"_id": 0, "ticket_number": 1}
+    ).to_list(None)
+    
+    max_number = 0
+    for order in orders:
+        try:
+            num = int(order.get("ticket_number", "0"))
+            if num > max_number:
+                max_number = num
+        except (ValueError, TypeError):
+            continue
+    
+    return {"next_ticket_number": str(max_number + 1)}
+
+
 @api_router.get("/service-orders/stats")
 async def get_service_orders_stats(current_user: User = Depends(get_current_user)):
     """Get statistics by status"""

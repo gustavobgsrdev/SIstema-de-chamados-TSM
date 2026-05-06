@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { axiosInstance as axios } from "@/api/axios";
 import { Button } from "@/components/ui/button";
@@ -64,6 +64,13 @@ const CreateServiceOrder = () => {
       observation: ""
     }))
   });
+
+  // Auto-preencher número do chamado
+  useEffect(() => {
+    axios.get(`/service-orders/next-ticket`).then(res => {
+      setFormData(prev => ({ ...prev, ticket_number: res.data.next_ticket_number }));
+    }).catch(() => {});
+  }, []);
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
