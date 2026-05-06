@@ -1,15 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { axiosInstance as axios } from "@/api/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { ArrowLeft, Plus, Trash2, Shield, User as UserIcon, Edit } from "lucide-react";
-
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
 
 const UserManagement = () => {
   const navigate = useNavigate();
@@ -47,13 +44,12 @@ const UserManagement = () => {
 
   const loadUsers = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`${API}/users`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(`/users`);
       setUsers(response.data);
     } catch (error) {
-      toast.error("Erro ao carregar usuários");
+      if (error.response?.status !== 401) {
+        toast.error("Erro ao carregar usuários");
+      }
     } finally {
       setLoading(false);
     }
@@ -64,10 +60,7 @@ const UserManagement = () => {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
-      await axios.post(`${API}/auth/register`, formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post(`/auth/register`, formData);
 
       toast.success("Usuário criado com sucesso!");
       setShowCreateForm(false);
@@ -96,7 +89,6 @@ const UserManagement = () => {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
       const updateData = {
         name: editFormData.name,
         email: editFormData.email,
@@ -108,9 +100,7 @@ const UserManagement = () => {
         updateData.password = editFormData.password;
       }
 
-      await axios.put(`${API}/users/${editingUser.id}`, updateData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.put(`/users/${editingUser.id}`, updateData);
 
       toast.success("Usuário atualizado com sucesso!");
       setShowEditForm(false);
@@ -128,10 +118,7 @@ const UserManagement = () => {
     if (!window.confirm("Deseja realmente excluir este usuário?")) return;
 
     try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`${API}/users/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(`/users/${userId}`);
       toast.success("Usuário excluído com sucesso");
       loadUsers();
     } catch (error) {
@@ -338,15 +325,26 @@ const UserManagement = () => {
                     {new Date(user.created_at).toLocaleDateString('pt-BR')}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <Button
-                      onClick={() => handleDelete(user.id)}
-                      variant="ghost"
-                      size="sm"
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                      data-testid={`delete-user-${user.id}`}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                    <div className="flex items-center justify-end gap-1">
+                      <Button
+                        onClick={() => handleEdit(user)}
+                        variant="ghost"
+                        size="sm"
+                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                        data-testid={`edit-user-${user.id}`}
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        onClick={() => handleDelete(user.id)}
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        data-testid={`delete-user-${user.id}`}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))}

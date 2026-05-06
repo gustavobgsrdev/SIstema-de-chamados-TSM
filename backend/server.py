@@ -548,7 +548,8 @@ async def get_service_orders_stats(current_user: User = Depends(get_current_user
         "PENDENCIA": 0,
         "SUSPENSO": 0,
         "DEFINIR": 0,
-        "RESOLVIDO": 0
+        "RESOLVIDO": 0,
+        "MANUTENÇÃO PREVENTIVA": 0
     }
     
     for result in results:
@@ -617,7 +618,7 @@ async def export_service_orders(
     cell_alignment = Alignment(horizontal="center", vertical="center")
     
     # Headers
-    headers = ["N° CHAMADO", "N° OS", "PAT", "CLIENTE", "UNIDADE", "DATA", "SITUAÇÃO"]
+    headers = ["N° CHAMADO", "N° OS", "PAT", "CLIENTE", "UNIDADE", "DATA", "SITUAÇÃO", "MATERIAIS"]
     ws.append(headers)
     
     # Style header row
@@ -636,18 +637,19 @@ async def export_service_orders(
             str(order.get('client_name', '')),
             str(order.get('unit', '')),
             str(order.get('opening_date', '')),
-            str(order.get('status', 'ABERTO'))
+            str(order.get('status', 'ABERTO')),
+            str(order.get('materials', ''))
         ]
         ws.append(row)
     
     # Style data rows
-    for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=7):
+    for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=8):
         for cell in row:
             cell.border = border_style
             cell.alignment = cell_alignment
     
     # Adjust column widths
-    column_widths = [15, 10, 12, 30, 20, 12, 15]
+    column_widths = [15, 10, 12, 30, 20, 12, 15, 35]
     for i, width in enumerate(column_widths, 1):
         ws.column_dimensions[chr(64 + i)].width = width
     

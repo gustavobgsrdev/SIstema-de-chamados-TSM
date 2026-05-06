@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { axiosInstance as axios } from "@/api/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,9 +8,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { ArrowLeft, Upload, Loader2, Image as ImageIcon } from "lucide-react";
-
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
 
 const VERIFICATION_ITEMS = [
   "IMPRESSÃO/XEROX",
@@ -82,13 +79,11 @@ const CreateServiceOrder = () => {
     // OCR
     setOcrLoading(true);
     try {
-      const token = localStorage.getItem("token");
       const formDataUpload = new FormData();
       formDataUpload.append("file", file);
 
-      const response = await axios.post(`${API}/ocr`, formDataUpload, {
+      const response = await axios.post(`/ocr`, formDataUpload, {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });
@@ -137,10 +132,7 @@ const CreateServiceOrder = () => {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
-      await axios.post(`${API}/service-orders`, formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post(`/service-orders`, formData);
 
       toast.success("O.S. criada com sucesso!");
       navigate("/dashboard");
@@ -281,6 +273,7 @@ const CreateServiceOrder = () => {
                     <SelectItem value="SUSPENSO">SUSPENSO</SelectItem>
                     <SelectItem value="DEFINIR">DEFINIR</SelectItem>
                     <SelectItem value="RESOLVIDO">RESOLVIDO</SelectItem>
+                    <SelectItem value="MANUTENÇÃO PREVENTIVA">MANUTENÇÃO PREVENTIVA</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

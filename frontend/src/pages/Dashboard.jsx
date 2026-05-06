@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { axiosInstance as axios, API } from "@/api/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, Search, Eye, Edit, Trash2, LogOut, FileText, Users } from "lucide-react";
-
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import { Plus, Search, Eye, Edit, Trash2, LogOut, FileText, Users, Calendar, X } from "lucide-react";
 
 const STATUS_COLORS = {
   "URGENTE": "bg-orange-100 text-orange-900 border-orange-500",
@@ -18,8 +16,24 @@ const STATUS_COLORS = {
   "PENDENCIA": "bg-red-100 text-red-800 border-red-300",
   "SUSPENSO": "bg-pink-100 text-pink-800 border-pink-300",
   "DEFINIR": "bg-purple-100 text-purple-800 border-purple-300",
-  "RESOLVIDO": "bg-green-100 text-green-800 border-green-300"
+  "RESOLVIDO": "bg-green-100 text-green-800 border-green-300",
+  "MANUTENÇÃO PREVENTIVA": "bg-teal-100 text-teal-800 border-teal-300"
 };
+
+const MONTHS = [
+  { value: 1, label: "Janeiro" },
+  { value: 2, label: "Fevereiro" },
+  { value: 3, label: "Março" },
+  { value: 4, label: "Abril" },
+  { value: 5, label: "Maio" },
+  { value: 6, label: "Junho" },
+  { value: 7, label: "Julho" },
+  { value: 8, label: "Agosto" },
+  { value: 9, label: "Setembro" },
+  { value: 10, label: "Outubro" },
+  { value: 11, label: "Novembro" },
+  { value: 12, label: "Dezembro" },
+];
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -55,6 +69,13 @@ const Dashboard = () => {
   const [unitFilter, setUnitFilter] = useState("");
   const [dateStart, setDateStart] = useState(defaultDates.start);
   const [dateEnd, setDateEnd] = useState(defaultDates.end);
+  const [showPreventiveModal, setShowPreventiveModal] = useState(false);
+  const [preventiveMonth, setPreventiveMonth] = useState("");
+  const [preventiveYear, setPreventiveYear] = useState(new Date().getFullYear().toString());
+  const [preventiveClient, setPreventiveClient] = useState("");
+  const [preventiveUnit, setPreventiveUnit] = useState("");
+  const [preventiveEquipment, setPreventiveEquipment] = useState("");
+  const [preventiveLoading, setPreventiveLoading] = useState(false);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -76,14 +97,13 @@ const Dashboard = () => {
 
   const loadOrders = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`${API}/service-orders`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(`/service-orders`);
       setOrders(response.data);
       setFilteredOrders(response.data);
     } catch (error) {
-      toast.error("Erro ao carregar ordens de serviço");
+      if (error.response?.status !== 401) {
+        toast.error("Erro ao carregar ordens de serviço");
+      }
     } finally {
       setLoading(false);
     }
@@ -99,6 +119,7 @@ const Dashboard = () => {
       SUSPENSO: 0,
       DEFINIR: 0,
       RESOLVIDO: 0,
+      "MANUTENÇÃO PREVENTIVA": 0,
       total: 0
     };
 
@@ -154,6 +175,7 @@ const Dashboard = () => {
 
     // Special date filter logic:
     // - RESOLVIDO: only show within date range
+    // - MANUTENÇÃO PREVENTIVA: only show if current filter month matches scheduled month
     // - Other statuses: always show regardless of date
     if (dateStart || dateEnd) {
       filtered = filtered.filter(order => {
@@ -168,7 +190,37 @@ const Dashboard = () => {
           return true;
         }
         
+        // If status is MANUTENÇÃO PREVENTIVA, only show in scheduled month
+        if (order.status === 'MANUTENÇÃO PREVENTIVA') {
+          if (!order.opening_date) return false;
+          const orderDate = order.opening_date;
+          
+          if (dateStart && orderDate < dateStart) return false;
+          if (dateEnd && orderDate > dateEnd) return false;
+          
+          return true;
+        }
+        
         // For all other statuses, show regardless of date
+        return true;
+      });
+    } else {
+      // When no date filter is set, hide preventivas that are not in the current month
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth() + 1;
+      
+      filtered = filtered.filter(order => {
+        if (order.status === 'MANUTENÇÃO PREVENTIVA') {
+          if (!order.opening_date) return false;
+          const parts = order.opening_date.split('-');
+          if (parts.length >= 2) {
+            const orderYear = parseInt(parts[0]);
+            const orderMonth = parseInt(parts[1]);
+            return orderYear === currentYear && orderMonth === currentMonth;
+          }
+          return false;
+        }
         return true;
       });
     }
@@ -180,14 +232,13 @@ const Dashboard = () => {
     if (!window.confirm("Deseja realmente excluir esta O.S.?")) return;
 
     try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`${API}/service-orders/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(`/service-orders/${id}`);
       toast.success("O.S. excluída com sucesso");
       loadOrders();
     } catch (error) {
-      toast.error("Erro ao excluir O.S.");
+      if (error.response?.status !== 401) {
+        toast.error("Erro ao excluir O.S.");
+      }
     }
   };
 
@@ -195,6 +246,49 @@ const Dashboard = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login");
+  };
+
+  const handleCreatePreventive = async () => {
+    if (!preventiveMonth) {
+      toast.error("Selecione o mês");
+      return;
+    }
+    
+    setPreventiveLoading(true);
+    try {
+      const year = parseInt(preventiveYear);
+      const month = parseInt(preventiveMonth);
+      const firstDay = `${year}-${String(month).padStart(2, '0')}-01`;
+      const monthLabel = MONTHS.find(m => m.value === month)?.label || "";
+      
+      const orderData = {
+        ticket_number: "",
+        os_number: "",
+        pat: "",
+        status: "MANUTENÇÃO PREVENTIVA",
+        opening_date: firstDay,
+        client_name: preventiveClient || "",
+        unit: preventiveUnit || "",
+        equipment_type: preventiveEquipment || "",
+        call_info: `Manutenção Preventiva agendada para ${monthLabel}/${year}`,
+        verification_mode: "DIGITAL",
+        verifications: []
+      };
+
+      await axios.post(`/service-orders`, orderData);
+      
+      toast.success(`Manutenção Preventiva agendada para ${monthLabel}/${year}!`);
+      setShowPreventiveModal(false);
+      setPreventiveMonth("");
+      setPreventiveClient("");
+      setPreventiveUnit("");
+      setPreventiveEquipment("");
+      loadOrders();
+    } catch (error) {
+      toast.error("Erro ao agendar manutenção preventiva");
+    } finally {
+      setPreventiveLoading(false);
+    }
   };
 
   if (loading) {
@@ -250,7 +344,7 @@ const Dashboard = () => {
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-9 gap-3 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-10 gap-3 mb-6">
           <div 
             className="bg-white rounded-lg shadow-sm p-4 border-l-4 border-slate-500 cursor-pointer hover:shadow-md transition-shadow"
             onClick={() => setStatusFilter("")}
@@ -323,6 +417,14 @@ const Dashboard = () => {
             <p className="text-xs text-green-700 mb-1">Resolvido</p>
             <p className="text-2xl font-bold text-green-800">{stats.RESOLVIDO || 0}</p>
           </div>
+          <div 
+            className="bg-teal-50 rounded-lg shadow-sm p-4 border-l-4 border-teal-500 cursor-pointer hover:shadow-md transition-shadow"
+            onClick={() => setStatusFilter(statusFilter === "MANUTENÇÃO PREVENTIVA" ? "" : "MANUTENÇÃO PREVENTIVA")}
+            data-testid="stat-preventiva"
+          >
+            <p className="text-xs text-teal-700 mb-1">Preventiva</p>
+            <p className="text-2xl font-bold text-teal-800">{stats["MANUTENÇÃO PREVENTIVA"] || 0}</p>
+          </div>
         </div>
 
         {/* Filters Bar */}
@@ -353,6 +455,7 @@ const Dashboard = () => {
                 <SelectItem value="SUSPENSO">SUSPENSO</SelectItem>
                 <SelectItem value="DEFINIR">DEFINIR</SelectItem>
                 <SelectItem value="RESOLVIDO">RESOLVIDO</SelectItem>
+                <SelectItem value="MANUTENÇÃO PREVENTIVA">MANUTENÇÃO PREVENTIVA</SelectItem>
               </SelectContent>
             </Select>
             <Input
@@ -397,7 +500,7 @@ const Dashboard = () => {
               />
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button
               onClick={() => navigate("/create")}
               className="bg-blue-600 hover:bg-blue-700"
@@ -407,23 +510,28 @@ const Dashboard = () => {
               Nova O.S.
             </Button>
             <Button
+              onClick={() => setShowPreventiveModal(true)}
+              className="bg-teal-600 hover:bg-teal-700"
+              data-testid="preventive-schedule-button"
+            >
+              <Calendar className="w-4 h-4 mr-2" />
+              Agendamento Preventiva
+            </Button>
+            <Button
               onClick={async () => {
                 try {
                   if (filteredOrders.length === 0) {
                     toast.error("Nenhuma O.S. para exportar");
                     return;
                   }
-
-                  const token = localStorage.getItem("token");
                   
-                  // Send filtered order IDs
                   const orderIds = filteredOrders.map(o => o.id).join(",");
                   
-                  const response = await fetch(`${API}/service-orders/export?ids=${orderIds}`, {
-                    headers: { Authorization: `Bearer ${token}` }
+                  const response = await axios.get(`/service-orders/export?ids=${orderIds}`, {
+                    responseType: 'blob'
                   });
                   
-                  const blob = await response.blob();
+                  const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
                   const url = window.URL.createObjectURL(blob);
                   const a = document.createElement("a");
                   a.href = url;
@@ -544,6 +652,99 @@ const Dashboard = () => {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Modal Agendamento Preventiva */}
+        {showPreventiveModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" data-testid="preventive-modal-overlay">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-md" data-testid="preventive-modal">
+              <div className="flex items-center justify-between p-6 border-b border-slate-200">
+                <h2 className="text-lg font-semibold text-slate-800">Agendamento de Manutenção Preventiva</h2>
+                <button
+                  onClick={() => setShowPreventiveModal(false)}
+                  className="text-slate-400 hover:text-slate-600"
+                  data-testid="close-preventive-modal"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="p-6 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Mês</Label>
+                    <Select value={preventiveMonth} onValueChange={setPreventiveMonth}>
+                      <SelectTrigger data-testid="preventive-month-select">
+                        <SelectValue placeholder="Selecione o mês" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {MONTHS.map((m) => (
+                          <SelectItem key={m.value} value={String(m.value)}>{m.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Ano</Label>
+                    <Select value={preventiveYear} onValueChange={setPreventiveYear}>
+                      <SelectTrigger data-testid="preventive-year-select">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[0, 1, 2].map(offset => {
+                          const y = new Date().getFullYear() + offset;
+                          return <SelectItem key={y} value={String(y)}>{y}</SelectItem>;
+                        })}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div>
+                  <Label>Cliente</Label>
+                  <Input
+                    value={preventiveClient}
+                    onChange={(e) => setPreventiveClient(e.target.value)}
+                    placeholder="Nome do cliente"
+                    data-testid="preventive-client-input"
+                  />
+                </div>
+                <div>
+                  <Label>Unidade</Label>
+                  <Input
+                    value={preventiveUnit}
+                    onChange={(e) => setPreventiveUnit(e.target.value)}
+                    placeholder="Unidade"
+                    data-testid="preventive-unit-input"
+                  />
+                </div>
+                <div>
+                  <Label>Equipamento</Label>
+                  <Input
+                    value={preventiveEquipment}
+                    onChange={(e) => setPreventiveEquipment(e.target.value)}
+                    placeholder="Tipo de equipamento"
+                    data-testid="preventive-equipment-input"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 p-6 border-t border-slate-200">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowPreventiveModal(false)}
+                  data-testid="cancel-preventive-button"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  onClick={handleCreatePreventive}
+                  className="bg-teal-600 hover:bg-teal-700"
+                  disabled={preventiveLoading}
+                  data-testid="confirm-preventive-button"
+                >
+                  {preventiveLoading ? "Agendando..." : "Agendar Preventiva"}
+                </Button>
+              </div>
+            </div>
           </div>
         )}
       </main>

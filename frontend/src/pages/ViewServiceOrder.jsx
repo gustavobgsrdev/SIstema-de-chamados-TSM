@@ -1,13 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import { axiosInstance as axios } from "@/api/axios";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { ArrowLeft, Printer, Edit } from "lucide-react";
 import "./ViewServiceOrder.css";
-
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
 
 const VERIFICATION_ITEMS = [
   "IMPRESSÃO/XEROX",
@@ -37,14 +34,13 @@ const ViewServiceOrder = () => {
 
   const loadOrder = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`${API}/service-orders/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(`/service-orders/${id}`);
       setOrder(response.data);
     } catch (error) {
-      toast.error("Erro ao carregar O.S.");
-      navigate("/dashboard");
+      if (error.response?.status !== 401) {
+        toast.error("Erro ao carregar O.S.");
+        navigate("/dashboard");
+      }
     } finally {
       setLoading(false);
     }

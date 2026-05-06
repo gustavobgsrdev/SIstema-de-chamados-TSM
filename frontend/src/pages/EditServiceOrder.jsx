@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import { axiosInstance as axios } from "@/api/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,9 +8,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
-
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
 
 const VERIFICATION_ITEMS = [
   "IMPRESSÃO/XEROX",
@@ -41,10 +38,7 @@ const EditServiceOrder = () => {
 
   const loadOrder = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`${API}/service-orders/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(`/service-orders/${id}`);
       
       // Ensure verifications exist
       if (!response.data.verifications || response.data.verifications.length === 0) {
@@ -69,10 +63,7 @@ const EditServiceOrder = () => {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
-      await axios.put(`${API}/service-orders/${id}`, formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.put(`/service-orders/${id}`, formData);
 
       toast.success("O.S. atualizada com sucesso!");
       navigate("/dashboard");
@@ -176,6 +167,7 @@ const EditServiceOrder = () => {
                     <SelectItem value="SUSPENSO">SUSPENSO</SelectItem>
                     <SelectItem value="DEFINIR">DEFINIR</SelectItem>
                     <SelectItem value="RESOLVIDO">RESOLVIDO</SelectItem>
+                    <SelectItem value="MANUTENÇÃO PREVENTIVA">MANUTENÇÃO PREVENTIVA</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
