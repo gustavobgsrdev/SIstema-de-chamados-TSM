@@ -610,7 +610,12 @@ const Dashboard = () => {
                       )}
                       {order.opening_date && (
                         <p>
-                          <span className="font-medium">Data:</span> {order.opening_date}
+                          <span className="font-medium">Abertura:</span> {order.opening_date}
+                        </p>
+                      )}
+                      {order.service_date && (
+                        <p>
+                          <span className="font-medium">Atendimento:</span> {order.service_date}
                         </p>
                       )}
                       {order.responsible_tech && (

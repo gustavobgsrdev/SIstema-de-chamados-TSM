@@ -79,6 +79,7 @@ class ServiceOrder(BaseModel):
     pat: Optional[str] = None
     status: Optional[str] = "ABERTO"  # URGENTE, ABERTO, EM ROTA, LIBERADO, PENDENCIA, SUSPENSO, DEFINIR, RESOLVIDO, MANUTENÇÃO PREVENTIVA
     opening_date: Optional[str] = None
+    service_date: Optional[str] = None  # Data de atendimento (finalização)
     responsible_opening: Optional[str] = None
     responsible_tech: Optional[str] = None
     phone: Optional[str] = None
@@ -124,6 +125,7 @@ class ServiceOrderCreate(BaseModel):
     pat: Optional[str] = None
     status: Optional[str] = "ABERTO"
     opening_date: Optional[str] = None
+    service_date: Optional[str] = None
     responsible_opening: Optional[str] = None
     responsible_tech: Optional[str] = None
     phone: Optional[str] = None
@@ -152,6 +154,7 @@ class ServiceOrderUpdate(BaseModel):
     pat: Optional[str] = None
     status: Optional[str] = None
     opening_date: Optional[str] = None
+    service_date: Optional[str] = None
     responsible_opening: Optional[str] = None
     responsible_tech: Optional[str] = None
     phone: Optional[str] = None
@@ -640,7 +643,7 @@ async def export_service_orders(
     cell_alignment = Alignment(horizontal="center", vertical="center")
     
     # Headers
-    headers = ["N° CHAMADO", "N° OS", "PAT", "CLIENTE", "UNIDADE", "DATA", "SITUAÇÃO", "MATERIAIS"]
+    headers = ["N° CHAMADO", "N° OS", "PAT", "CLIENTE", "UNIDADE", "DATA ABERTURA", "DATA ATENDIMENTO", "SITUAÇÃO", "MATERIAIS"]
     ws.append(headers)
     
     # Style header row
@@ -659,19 +662,20 @@ async def export_service_orders(
             str(order.get('client_name', '')),
             str(order.get('unit', '')),
             str(order.get('opening_date', '')),
+            str(order.get('service_date', '')),
             str(order.get('status', 'ABERTO')),
             str(order.get('materials', ''))
         ]
         ws.append(row)
     
     # Style data rows
-    for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=8):
+    for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=9):
         for cell in row:
             cell.border = border_style
             cell.alignment = cell_alignment
     
     # Adjust column widths
-    column_widths = [15, 10, 12, 30, 20, 12, 15, 35]
+    column_widths = [15, 10, 12, 30, 20, 14, 14, 15, 35]
     for i, width in enumerate(column_widths, 1):
         ws.column_dimensions[chr(64 + i)].width = width
     

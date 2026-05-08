@@ -38,6 +38,7 @@ const CreateServiceOrder = () => {
     pat: "",
     status: "ABERTO",
     opening_date: "",
+    service_date: "",
     responsible_opening: "",
     responsible_tech: "",
     phone: "",
@@ -292,6 +293,16 @@ const CreateServiceOrder = () => {
                   value={formData.opening_date}
                   onChange={(e) => updateField("opening_date", e.target.value)}
                   data-testid="opening-date-input"
+                />
+              </div>
+              <div>
+                <Label htmlFor="service_date">Data de Atendimento</Label>
+                <Input
+                  id="service_date"
+                  type="date"
+                  value={formData.service_date}
+                  onChange={(e) => updateField("service_date", e.target.value)}
+                  data-testid="service-date-input"
                 />
               </div>
               <div>
