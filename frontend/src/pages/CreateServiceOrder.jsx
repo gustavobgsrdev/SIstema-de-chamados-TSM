@@ -38,7 +38,9 @@ const CreateServiceOrder = () => {
     pat: "",
     status: "ABERTO",
     opening_date: "",
+    opening_time: "",
     service_date: "",
+    service_time: "",
     responsible_opening: "",
     responsible_tech: "",
     phone: "",
@@ -296,6 +298,16 @@ const CreateServiceOrder = () => {
                 />
               </div>
               <div>
+                <Label htmlFor="opening_time">Hora de Abertura</Label>
+                <Input
+                  id="opening_time"
+                  type="time"
+                  value={formData.opening_time}
+                  onChange={(e) => updateField("opening_time", e.target.value)}
+                  data-testid="opening-time-input"
+                />
+              </div>
+              <div>
                 <Label htmlFor="service_date">Data de Atendimento</Label>
                 <Input
                   id="service_date"
@@ -303,6 +315,16 @@ const CreateServiceOrder = () => {
                   value={formData.service_date}
                   onChange={(e) => updateField("service_date", e.target.value)}
                   data-testid="service-date-input"
+                />
+              </div>
+              <div>
+                <Label htmlFor="service_time">Hora de Atendimento</Label>
+                <Input
+                  id="service_time"
+                  type="time"
+                  value={formData.service_time}
+                  onChange={(e) => updateField("service_time", e.target.value)}
+                  data-testid="service-time-input"
                 />
               </div>
               <div>

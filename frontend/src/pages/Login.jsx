@@ -49,7 +49,7 @@ const Login = ({ setIsAuthenticated }) => {
           </div>
           
           <h1 className="text-2xl font-bold text-center text-slate-800 mb-2">
-            Sistema de Ordens de Serviço
+            Sistema de Chamados
           </h1>
           <p className="text-center text-slate-600 mb-8">
             Faça login para continuar

@@ -149,7 +149,7 @@ const ViewServiceOrder = () => {
               </tr>
               <tr>
                 <td style={{ border: '1px solid #000', padding: '3px 5px', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>Data Abertura</td>
-                <td style={{ border: '1px solid #000', padding: '3px 5px' }}>{order.opening_date || ''}</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px' }}>{order.opening_date || ''}{order.opening_time ? ` às ${order.opening_time}` : ''}</td>
                 <td style={{ border: '1px solid #000', padding: '3px 5px', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>Responsável Técnico</td>
                 <td style={{ border: '1px solid #000', padding: '3px 5px' }}>{order.responsible_tech || ''}</td>
               </tr>
@@ -157,7 +157,7 @@ const ViewServiceOrder = () => {
                 <td style={{ border: '1px solid #000', padding: '3px 5px', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>Telefone</td>
                 <td style={{ border: '1px solid #000', padding: '3px 5px' }}>{order.phone || ''}</td>
                 <td style={{ border: '1px solid #000', padding: '3px 5px', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>Data Atendimento</td>
-                <td style={{ border: '1px solid #000', padding: '3px 5px' }}>{order.service_date || ''}</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px' }}>{order.service_date || ''}{order.service_time ? ` às ${order.service_time}` : ''}</td>
               </tr>
             </tbody>
           </table>

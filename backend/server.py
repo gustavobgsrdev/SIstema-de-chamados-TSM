@@ -79,7 +79,9 @@ class ServiceOrder(BaseModel):
     pat: Optional[str] = None
     status: Optional[str] = "ABERTO"  # URGENTE, ABERTO, EM ROTA, LIBERADO, PENDENCIA, SUSPENSO, DEFINIR, RESOLVIDO, MANUTENÇÃO PREVENTIVA
     opening_date: Optional[str] = None
+    opening_time: Optional[str] = None  # Hora de abertura
     service_date: Optional[str] = None  # Data de atendimento (finalização)
+    service_time: Optional[str] = None  # Hora de atendimento (finalização)
     responsible_opening: Optional[str] = None
     responsible_tech: Optional[str] = None
     phone: Optional[str] = None
@@ -125,7 +127,9 @@ class ServiceOrderCreate(BaseModel):
     pat: Optional[str] = None
     status: Optional[str] = "ABERTO"
     opening_date: Optional[str] = None
+    opening_time: Optional[str] = None
     service_date: Optional[str] = None
+    service_time: Optional[str] = None
     responsible_opening: Optional[str] = None
     responsible_tech: Optional[str] = None
     phone: Optional[str] = None
@@ -154,7 +158,9 @@ class ServiceOrderUpdate(BaseModel):
     pat: Optional[str] = None
     status: Optional[str] = None
     opening_date: Optional[str] = None
+    opening_time: Optional[str] = None
     service_date: Optional[str] = None
+    service_time: Optional[str] = None
     responsible_opening: Optional[str] = None
     responsible_tech: Optional[str] = None
     phone: Optional[str] = None

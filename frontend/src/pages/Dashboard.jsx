@@ -308,8 +308,8 @@ const Dashboard = () => {
             <div className="flex items-center gap-3">
               <img src="/tsm-logo.png" alt="TSM Printer Solutions" className="h-12 w-auto" />
               <div>
-                <h1 className="text-xl font-bold text-slate-800">Sistema de O.S.</h1>
-                <p className="text-sm text-slate-600">Gerenciamento de Ordens de Serviço</p>
+                <h1 className="text-xl font-bold text-slate-800">Sistema de Chamados</h1>
+                <p className="text-sm text-slate-600">Gerenciamento de Chamados</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
