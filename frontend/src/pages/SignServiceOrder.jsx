@@ -28,6 +28,7 @@ const SignServiceOrder = () => {
   const canvasTechRef = useRef(null);
   const [isDrawingClient, setIsDrawingClient] = useState(false);
   const [isDrawingTech, setIsDrawingTech] = useState(false);
+  const [clientSigData, setClientSigData] = useState("");
 
   useEffect(() => {
     loadOrder();
@@ -116,15 +117,12 @@ const SignServiceOrder = () => {
 
     setSigning(true);
     try {
-      const clientCanvas = canvasClientRef.current;
       const techCanvas = canvasTechRef.current;
-      
-      const clientSigData = clientCanvas ? clientCanvas.toDataURL("image/png") : "";
-      const techSigData = techCanvas ? techCanvas.toDataURL("image/png") : "";
+      const techSigImage = techCanvas ? techCanvas.toDataURL("image/png") : "";
 
       await axios.put(`/service-orders/${id}/sign`, {
         client_signature: JSON.stringify({ name: clientName, signature: clientSigData }),
-        tech_signature: JSON.stringify({ name: techName, signature: techSigData }),
+        tech_signature: JSON.stringify({ name: techName, signature: techSigImage }),
       });
 
       toast.success("Assinaturas registradas com sucesso!");
@@ -134,6 +132,18 @@ const SignServiceOrder = () => {
     } finally {
       setSigning(false);
     }
+  };
+
+  const goToTechSign = () => {
+    if (!clientName.trim()) {
+      toast.error("Preencha o nome do cliente");
+      return;
+    }
+    const clientCanvas = canvasClientRef.current;
+    if (clientCanvas) {
+      setClientSigData(clientCanvas.toDataURL("image/png"));
+    }
+    setStep("tech_sign");
   };
 
   if (loading) {
@@ -279,7 +289,7 @@ const SignServiceOrder = () => {
               </Button>
             </div>
             <Button
-              onClick={() => setStep("tech_sign")}
+              onClick={goToTechSign}
               className="w-full bg-blue-600 hover:bg-blue-700"
               data-testid="next-tech-sign-button"
             >

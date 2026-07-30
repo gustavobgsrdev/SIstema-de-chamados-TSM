@@ -767,7 +767,8 @@ async def sign_service_order(
     if not existing_order:
         raise HTTPException(status_code=404, detail="Service order not found")
     
-    now_str = datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M")
+    now_br = datetime.now(timezone(timedelta(hours=-3)))
+    now_str = now_br.strftime("%d/%m/%Y %H:%M")
     update_data = {}
     
     if sign_data.client_signature:
