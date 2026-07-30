@@ -6,6 +6,14 @@ import { toast } from "sonner";
 import { ArrowLeft, Printer, Edit } from "lucide-react";
 import "./ViewServiceOrder.css";
 
+const formatDate = (dateStr) => {
+  if (!dateStr) return "";
+  if (dateStr.includes("/")) return dateStr;
+  const parts = dateStr.split("-");
+  if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  return dateStr;
+};
+
 const VERIFICATION_ITEMS = [
   "IMPRESSÃO/XEROX",
   "DIGITALIZAÇÃO",
@@ -149,7 +157,7 @@ const ViewServiceOrder = () => {
               </tr>
               <tr>
                 <td style={{ border: '1px solid #000', padding: '3px 5px', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>Data Abertura</td>
-                <td style={{ border: '1px solid #000', padding: '3px 5px' }}>{order.opening_date || ''}{order.opening_time ? ` às ${order.opening_time}` : ''}</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px' }}>{formatDate(order.opening_date)}{order.opening_time ? ` às ${order.opening_time}` : ''}</td>
                 <td style={{ border: '1px solid #000', padding: '3px 5px', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>Responsável Técnico</td>
                 <td style={{ border: '1px solid #000', padding: '3px 5px' }}>{order.responsible_tech || ''}</td>
               </tr>
@@ -157,7 +165,7 @@ const ViewServiceOrder = () => {
                 <td style={{ border: '1px solid #000', padding: '3px 5px', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>Telefone</td>
                 <td style={{ border: '1px solid #000', padding: '3px 5px' }}>{order.phone || ''}</td>
                 <td style={{ border: '1px solid #000', padding: '3px 5px', fontWeight: 'bold', backgroundColor: '#e2e8f0' }}>Data Atendimento</td>
-                <td style={{ border: '1px solid #000', padding: '3px 5px' }}>{order.service_date || ''}{order.service_time ? ` às ${order.service_time}` : ''}</td>
+                <td style={{ border: '1px solid #000', padding: '3px 5px' }}>{formatDate(order.service_date)}{order.service_time ? ` às ${order.service_time}` : ''}</td>
               </tr>
             </tbody>
           </table>
@@ -333,22 +341,62 @@ const ViewServiceOrder = () => {
           {/* Signatures */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '20px' }}>
             <div>
-              <div style={{ borderTop: '1px solid #000', paddingTop: '5px', marginTop: '40px', textAlign: 'center' }}>
-                <p style={{ margin: 0, fontSize: '8pt', fontWeight: 'bold' }}>Assinatura do Técnico</p>
-                <p style={{ margin: '2px 0', fontSize: '7pt', color: '#64748b' }}>{order.responsible_tech || ''}</p>
-                <p style={{ margin: '2px 0', fontSize: '7pt', color: '#000' }}>
-                  Data: ___/___/______ Hora: ___:___
-                </p>
-              </div>
+              {order.tech_signature ? (() => {
+                try {
+                  const sig = JSON.parse(order.tech_signature);
+                  return (
+                    <div style={{ textAlign: 'center' }}>
+                      <img src={sig.signature} alt="Assinatura Técnico" style={{ maxWidth: '200px', maxHeight: '80px', margin: '0 auto', display: 'block' }} />
+                      <div style={{ borderTop: '1px solid #000', paddingTop: '5px', marginTop: '5px' }}>
+                        <p style={{ margin: 0, fontSize: '8pt', fontWeight: 'bold' }}>Assinatura do Técnico</p>
+                        <p style={{ margin: '2px 0', fontSize: '7pt', color: '#64748b' }}>{sig.name}</p>
+                        <p style={{ margin: '2px 0', fontSize: '7pt', color: '#000' }}>
+                          Assinado em: {order.tech_sign_datetime || ""}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                } catch { return null; }
+              })() : (
+                <div>
+                  <div style={{ borderTop: '1px solid #000', paddingTop: '5px', marginTop: '40px', textAlign: 'center' }}>
+                    <p style={{ margin: 0, fontSize: '8pt', fontWeight: 'bold' }}>Assinatura do Técnico</p>
+                    <p style={{ margin: '2px 0', fontSize: '7pt', color: '#64748b' }}>{order.responsible_tech || ''}</p>
+                    <p style={{ margin: '2px 0', fontSize: '7pt', color: '#000' }}>
+                      Data: ___/___/______ Hora: ___:___
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
             <div>
-              <div style={{ borderTop: '1px solid #000', paddingTop: '5px', marginTop: '40px', textAlign: 'center' }}>
-                <p style={{ margin: 0, fontSize: '8pt', fontWeight: 'bold' }}>Assinatura do Cliente</p>
-                <p style={{ margin: '2px 0', fontSize: '7pt', color: '#64748b' }}>Ciente do serviço executado</p>
-                <p style={{ margin: '2px 0', fontSize: '7pt', color: '#000' }}>
-                  Data: ___/___/______ Hora: ___:___
-                </p>
-              </div>
+              {order.client_signature ? (() => {
+                try {
+                  const sig = JSON.parse(order.client_signature);
+                  return (
+                    <div style={{ textAlign: 'center' }}>
+                      <img src={sig.signature} alt="Assinatura Cliente" style={{ maxWidth: '200px', maxHeight: '80px', margin: '0 auto', display: 'block' }} />
+                      <div style={{ borderTop: '1px solid #000', paddingTop: '5px', marginTop: '5px' }}>
+                        <p style={{ margin: 0, fontSize: '8pt', fontWeight: 'bold' }}>Assinatura do Cliente</p>
+                        <p style={{ margin: '2px 0', fontSize: '7pt', color: '#64748b' }}>{sig.name}</p>
+                        <p style={{ margin: '2px 0', fontSize: '7pt', color: '#000' }}>
+                          Assinado em: {order.client_sign_datetime || ""}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                } catch { return null; }
+              })() : (
+                <div>
+                  <div style={{ borderTop: '1px solid #000', paddingTop: '5px', marginTop: '40px', textAlign: 'center' }}>
+                    <p style={{ margin: 0, fontSize: '8pt', fontWeight: 'bold' }}>Assinatura do Cliente</p>
+                    <p style={{ margin: '2px 0', fontSize: '7pt', color: '#64748b' }}>Ciente do serviço executado</p>
+                    <p style={{ margin: '2px 0', fontSize: '7pt', color: '#000' }}>
+                      Data: ___/___/______ Hora: ___:___
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

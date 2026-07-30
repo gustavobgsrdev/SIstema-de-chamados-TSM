@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import CreateServiceOrder from "./pages/CreateServiceOrder";
 import EditServiceOrder from "./pages/EditServiceOrder";
 import ViewServiceOrder from "./pages/ViewServiceOrder";
+import SignServiceOrder from "./pages/SignServiceOrder";
 import UserManagement from "./pages/UserManagement";
 
 // Suppress ResizeObserver errors (safe to ignore - caused by Radix UI)
@@ -93,6 +94,16 @@ function App() {
             element={
               isAuthenticated ? (
                 <ViewServiceOrder />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/sign/:id"
+            element={
+              isAuthenticated ? (
+                <SignServiceOrder />
               ) : (
                 <Navigate to="/login" />
               )

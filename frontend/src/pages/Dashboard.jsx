@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, Search, Eye, Edit, Trash2, LogOut, FileText, Users, Calendar, X } from "lucide-react";
+import { Plus, Search, Eye, Edit, Trash2, LogOut, FileText, Users, Calendar, X, PenTool } from "lucide-react";
 
 const STATUS_COLORS = {
   "URGENTE": "bg-orange-100 text-orange-900 border-orange-500",
@@ -34,6 +34,15 @@ const MONTHS = [
   { value: 11, label: "Novembro" },
   { value: 12, label: "Dezembro" },
 ];
+
+// Formata data YYYY-MM-DD para DD/MM/YYYY
+const formatDate = (dateStr) => {
+  if (!dateStr) return "";
+  if (dateStr.includes("/")) return dateStr;
+  const parts = dateStr.split("-");
+  if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  return dateStr;
+};
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -610,12 +619,12 @@ const Dashboard = () => {
                       )}
                       {order.opening_date && (
                         <p>
-                          <span className="font-medium">Abertura:</span> {order.opening_date}
+                          <span className="font-medium">Abertura:</span> {formatDate(order.opening_date)}
                         </p>
                       )}
                       {order.service_date && (
                         <p>
-                          <span className="font-medium">Atendimento:</span> {order.service_date}
+                          <span className="font-medium">Atendimento:</span> {formatDate(order.service_date)}
                         </p>
                       )}
                       {order.responsible_tech && (
@@ -643,6 +652,16 @@ const Dashboard = () => {
                     >
                       <Edit className="w-4 h-4 mr-1" />
                       Editar
+                    </Button>
+                    <Button
+                      onClick={() => navigate(`/sign/${order.id}`)}
+                      variant="outline"
+                      size="sm"
+                      className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                      data-testid={`sign-button-${order.id}`}
+                    >
+                      <PenTool className="w-4 h-4 mr-1" />
+                      Assinar
                     </Button>
                     <Button
                       onClick={() => handleDelete(order.id)}

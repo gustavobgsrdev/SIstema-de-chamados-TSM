@@ -116,6 +116,12 @@ class ServiceOrder(BaseModel):
     # Observações
     observations: Optional[str] = None
     
+    # Assinaturas
+    client_signature: Optional[str] = None
+    client_sign_datetime: Optional[str] = None
+    tech_signature: Optional[str] = None
+    tech_sign_datetime: Optional[str] = None
+    
     # Metadata
     created_by: str
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -746,6 +752,47 @@ async def update_service_order(
         updated_order['updated_at'] = datetime.fromisoformat(updated_order['updated_at'])
     
     return ServiceOrder(**updated_order)
+
+class SignatureData(BaseModel):
+    client_signature: Optional[str] = None
+    tech_signature: Optional[str] = None
+
+@api_router.put("/service-orders/{order_id}/sign")
+async def sign_service_order(
+    order_id: str,
+    sign_data: SignatureData,
+    current_user: User = Depends(get_current_user)
+):
+    existing_order = await db.service_orders.find_one({"id": order_id})
+    if not existing_order:
+        raise HTTPException(status_code=404, detail="Service order not found")
+    
+    now_str = datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M")
+    update_data = {}
+    
+    if sign_data.client_signature:
+        update_data['client_signature'] = sign_data.client_signature
+        update_data['client_sign_datetime'] = now_str
+    if sign_data.tech_signature:
+        update_data['tech_signature'] = sign_data.tech_signature
+        update_data['tech_sign_datetime'] = now_str
+    
+    update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
+    
+    await db.service_orders.update_one(
+        {"id": order_id},
+        {"$set": update_data}
+    )
+    
+    updated_order = await db.service_orders.find_one({"id": order_id}, {"_id": 0})
+    if isinstance(updated_order.get('created_at'), str):
+        updated_order['created_at'] = datetime.fromisoformat(updated_order['created_at'])
+    if isinstance(updated_order.get('updated_at'), str):
+        updated_order['updated_at'] = datetime.fromisoformat(updated_order['updated_at'])
+    
+    return ServiceOrder(**updated_order)
+
+
 
 @api_router.delete("/service-orders/{order_id}")
 async def delete_service_order(
