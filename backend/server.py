@@ -42,6 +42,7 @@ class UserCreate(BaseModel):
     password: str
     name: str
     role: str = "USER"
+    departments: List[str] = Field(default_factory=list)  # Técnica, Logística, Comercial, Financeiro
 
 class UserLogin(BaseModel):
     email: str  # Username
@@ -53,6 +54,7 @@ class User(BaseModel):
     email: str  # Username (not email format)
     name: str
     role: str = "USER"  # ADMIN or USER
+    departments: List[str] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class TokenResponse(BaseModel):
@@ -347,7 +349,8 @@ async def register(user_data: UserCreate, current_user: User = Depends(get_curre
     user = User(
         email=user_data.email,
         name=user_data.name,
-        role=user_data.role
+        role=user_data.role,
+        departments=user_data.departments
     )
     
     user_doc = user.model_dump()
@@ -401,6 +404,7 @@ class UserUpdate(BaseModel):
     email: Optional[str] = None  # Username
     password: Optional[str] = None
     role: Optional[str] = None
+    departments: Optional[List[str]] = None
 
 @api_router.put("/users/{user_id}", response_model=User)
 async def update_user(
@@ -434,6 +438,8 @@ async def update_user(
         update_data['password'] = hash_password(user_data.password)
     if user_data.role:
         update_data['role'] = user_data.role
+    if user_data.departments is not None:
+        update_data['departments'] = user_data.departments
     
     if not update_data:
         raise HTTPException(status_code=400, detail="No fields to update")

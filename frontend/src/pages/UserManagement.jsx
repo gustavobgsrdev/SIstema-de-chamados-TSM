@@ -6,7 +6,43 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, Trash2, Shield, User as UserIcon, Edit } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Shield, User as UserIcon, Edit, Check } from "lucide-react";
+
+const DEPARTMENTS = ["Técnica", "Logística", "Comercial", "Financeiro"];
+
+const DepartmentSelector = ({ selected, onChange, testIdPrefix }) => {
+  const toggle = (dept) => {
+    if (selected.includes(dept)) {
+      onChange(selected.filter(d => d !== dept));
+    } else {
+      onChange([...selected, dept]);
+    }
+  };
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {DEPARTMENTS.map((dept) => {
+        const isActive = selected.includes(dept);
+        return (
+          <button
+            key={dept}
+            type="button"
+            onClick={() => toggle(dept)}
+            data-testid={`${testIdPrefix}-dept-${dept.toLowerCase()}`}
+            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+              isActive
+                ? "bg-blue-600 text-white border-blue-600"
+                : "bg-white text-slate-600 border-slate-300 hover:border-blue-400 hover:text-blue-600"
+            }`}
+          >
+            {isActive && <Check className="w-3 h-3" />}
+            {dept}
+          </button>
+        );
+      })}
+    </div>
+  );
+};
 
 const UserManagement = () => {
   const navigate = useNavigate();
@@ -19,17 +55,18 @@ const UserManagement = () => {
     email: "",
     password: "",
     name: "",
-    role: "USER"
+    role: "USER",
+    departments: []
   });
   const [editFormData, setEditFormData] = useState({
     email: "",
     password: "",
     name: "",
-    role: "USER"
+    role: "USER",
+    departments: []
   });
 
   useEffect(() => {
-    // Check if user is admin
     const userData = localStorage.getItem("user");
     if (userData) {
       const user = JSON.parse(userData);
@@ -64,7 +101,7 @@ const UserManagement = () => {
 
       toast.success("Usuário criado com sucesso!");
       setShowCreateForm(false);
-      setFormData({ email: "", password: "", name: "", role: "USER" });
+      setFormData({ email: "", password: "", name: "", role: "USER", departments: [] });
       loadUsers();
     } catch (error) {
       toast.error(error.response?.data?.detail || "Erro ao criar usuário");
@@ -79,7 +116,8 @@ const UserManagement = () => {
       email: user.email,
       password: "",
       name: user.name,
-      role: user.role
+      role: user.role,
+      departments: user.departments || []
     });
     setShowEditForm(true);
   };
@@ -92,10 +130,10 @@ const UserManagement = () => {
       const updateData = {
         name: editFormData.name,
         email: editFormData.email,
-        role: editFormData.role
+        role: editFormData.role,
+        departments: editFormData.departments
       };
       
-      // Only send password if it was changed
       if (editFormData.password) {
         updateData.password = editFormData.password;
       }
@@ -105,7 +143,7 @@ const UserManagement = () => {
       toast.success("Usuário atualizado com sucesso!");
       setShowEditForm(false);
       setEditingUser(null);
-      setEditFormData({ email: "", password: "", name: "", role: "USER" });
+      setEditFormData({ email: "", password: "", name: "", role: "USER", departments: [] });
       loadUsers();
     } catch (error) {
       toast.error(error.response?.data?.detail || "Erro ao atualizar usuário");
@@ -220,6 +258,16 @@ const UserManagement = () => {
                   </Select>
                 </div>
               </div>
+              <div>
+                <Label>Departamentos</Label>
+                <div className="mt-1">
+                  <DepartmentSelector
+                    selected={formData.departments}
+                    onChange={(deps) => setFormData({ ...formData, departments: deps })}
+                    testIdPrefix="create"
+                  />
+                </div>
+              </div>
               <Button type="submit" className="bg-green-600 hover:bg-green-700" data-testid="create-user-button">
                 Criar Usuário
               </Button>
@@ -276,6 +324,16 @@ const UserManagement = () => {
                   </Select>
                 </div>
               </div>
+              <div>
+                <Label>Departamentos</Label>
+                <div className="mt-1">
+                  <DepartmentSelector
+                    selected={editFormData.departments}
+                    onChange={(deps) => setEditFormData({ ...editFormData, departments: deps })}
+                    testIdPrefix="edit"
+                  />
+                </div>
+              </div>
               <div className="flex gap-2">
                 <Button type="submit" className="bg-blue-600 hover:bg-blue-700" data-testid="update-user-button">
                   Atualizar Usuário
@@ -302,6 +360,7 @@ const UserManagement = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">Nome</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">Usuário</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">Tipo</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">Departamentos</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">Data Criação</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase">Ações</th>
               </tr>
@@ -320,6 +379,22 @@ const UserManagement = () => {
                       {user.role === "ADMIN" ? <Shield className="w-3 h-3" /> : <UserIcon className="w-3 h-3" />}
                       {user.role === "ADMIN" ? "Admin" : "Usuário"}
                     </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex flex-wrap gap-1">
+                      {(user.departments || []).length > 0 ? (
+                        user.departments.map((dept) => (
+                          <span
+                            key={dept}
+                            className="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200"
+                          >
+                            {dept}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-xs text-slate-400">-</span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-600">
                     {new Date(user.created_at).toLocaleDateString('pt-BR')}
