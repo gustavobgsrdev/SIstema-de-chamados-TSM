@@ -39,6 +39,7 @@ async def init_users():
             "email": "gustavo_tsm",
             "name": "Gustavo",
             "role": "ADMIN",
+            "departments": [],
             "password": hash_password("3758"),
             "created_at": datetime.now(timezone.utc).isoformat()
         }
@@ -52,6 +53,7 @@ async def init_users():
             "email": "vinnicius_tsm",
             "name": "Vinnicius",
             "role": "USER",
+            "departments": [],
             "password": hash_password("3758"),
             "created_at": datetime.now(timezone.utc).isoformat()
         }

@@ -405,7 +405,7 @@ async def get_technicians(current_user: User = Depends(get_current_user)):
     technicians = await db.users.find(
         {"departments": "Técnica"},
         {"_id": 0, "password": 0}
-    ).to_list(None)
+    ).to_list(1000)
     
     for user in technicians:
         if isinstance(user.get('created_at'), str):
@@ -567,20 +567,21 @@ async def get_service_orders(
 @api_router.get("/service-orders/next-ticket")
 async def get_next_ticket_number(current_user: User = Depends(get_current_user)):
     """Get the next ticket number (auto-increment)"""
-    # Find the highest numeric ticket_number
-    orders = await db.service_orders.find(
-        {"ticket_number": {"$exists": True, "$ne": None, "$ne": ""}},
-        {"_id": 0, "ticket_number": 1}
-    ).to_list(None)
+    pipeline = [
+        {"$match": {"ticket_number": {"$exists": True, "$ne": None, "$ne": ""}}},
+        {"$addFields": {"ticket_num_int": {"$toInt": {"$ifNull": ["$ticket_number", "0"]}}}},
+        {"$sort": {"ticket_num_int": -1}},
+        {"$limit": 1},
+        {"$project": {"_id": 0, "ticket_number": 1}}
+    ]
+    result = await db.service_orders.aggregate(pipeline).to_list(1)
     
     max_number = 0
-    for order in orders:
+    if result:
         try:
-            num = int(order.get("ticket_number", "0"))
-            if num > max_number:
-                max_number = num
+            max_number = int(result[0].get("ticket_number", "0"))
         except (ValueError, TypeError):
-            continue
+            pass
     
     return {"next_ticket_number": str(max_number + 1)}
 
