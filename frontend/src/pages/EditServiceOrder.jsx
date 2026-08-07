@@ -67,6 +67,7 @@ const EditServiceOrder = () => {
     
     if (!formData.ticket_number?.trim()) { toast.error("Nº do Chamado é obrigatório"); return; }
     if (!formData.opening_date) { toast.error("Data de Abertura é obrigatória"); return; }
+    if (!formData.opening_time) { toast.error("Hora de Abertura é obrigatória"); return; }
     if (!formData.client_name?.trim()) { toast.error("Cliente é obrigatório"); return; }
     if (!formData.equipment_type?.trim()) { toast.error("Tipo de Equipamento é obrigatório"); return; }
     
@@ -189,6 +190,16 @@ const EditServiceOrder = () => {
                   value={formData.opening_date || ""}
                   onChange={(e) => updateField("opening_date", e.target.value)}
                   data-testid="opening-date-input"
+                />
+              </div>
+              <div>
+                <Label htmlFor="opening_time">Hora de Abertura <span className="text-red-500">*</span></Label>
+                <Input
+                  id="opening_time"
+                  type="time"
+                  value={formData.opening_time || ""}
+                  onChange={(e) => updateField("opening_time", e.target.value)}
+                  data-testid="opening-time-input"
                 />
               </div>
               <div>
