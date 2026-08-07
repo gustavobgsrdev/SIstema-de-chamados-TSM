@@ -399,6 +399,22 @@ async def get_users(current_user: User = Depends(get_current_user)):
     
     return users
 
+@api_router.get("/users/technicians", response_model=List[User])
+async def get_technicians(current_user: User = Depends(get_current_user)):
+    """Get users with 'Técnica' department"""
+    technicians = await db.users.find(
+        {"departments": "Técnica"},
+        {"_id": 0, "password": 0}
+    ).to_list(None)
+    
+    for user in technicians:
+        if isinstance(user.get('created_at'), str):
+            user['created_at'] = datetime.fromisoformat(user['created_at'])
+    
+    return technicians
+
+
+
 class UserUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[str] = None  # Username

@@ -612,6 +612,11 @@ const Dashboard = () => {
                           <span className="font-medium">Cliente:</span> {order.client_name}
                         </p>
                       )}
+                      {order.unit && (
+                        <p>
+                          <span className="font-medium">Unidade:</span> {order.unit}
+                        </p>
+                      )}
                       {order.pat && (
                         <p>
                           <span className="font-medium">PAT:</span> {order.pat}

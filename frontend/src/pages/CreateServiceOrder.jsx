@@ -31,6 +31,7 @@ const CreateServiceOrder = () => {
   const [ocrLoading, setOcrLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
   const [ocrText, setOcrText] = useState("");
+  const [technicians, setTechnicians] = useState([]);
   
   const [formData, setFormData] = useState({
     ticket_number: "",
@@ -68,10 +69,13 @@ const CreateServiceOrder = () => {
     }))
   });
 
-  // Auto-preencher número do chamado
+  // Auto-preencher número do chamado e carregar técnicos
   useEffect(() => {
     axios.get(`/service-orders/next-ticket`).then(res => {
       setFormData(prev => ({ ...prev, ticket_number: res.data.next_ticket_number }));
+    }).catch(() => {});
+    axios.get(`/users/technicians`).then(res => {
+      setTechnicians(res.data);
     }).catch(() => {});
   }, []);
 
@@ -139,6 +143,14 @@ const CreateServiceOrder = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validação campos obrigatórios
+    if (!formData.ticket_number.trim()) { toast.error("Nº do Chamado é obrigatório"); return; }
+    if (!formData.opening_date) { toast.error("Data de Abertura é obrigatória"); return; }
+    if (!formData.opening_time) { toast.error("Hora de Abertura é obrigatória"); return; }
+    if (!formData.client_name.trim()) { toast.error("Cliente é obrigatório"); return; }
+    if (!formData.equipment_type.trim()) { toast.error("Tipo de Equipamento é obrigatório"); return; }
+    
     setLoading(true);
 
     try {
@@ -240,11 +252,12 @@ const CreateServiceOrder = () => {
             <h2 className="text-lg font-semibold text-slate-800 mb-4">Informações Básicas</h2>
             <div className="grid md:grid-cols-3 gap-4 mb-4">
               <div>
-                <Label htmlFor="ticket_number">Nº do Chamado</Label>
+                <Label htmlFor="ticket_number">Nº do Chamado <span className="text-red-500">*</span></Label>
                 <Input
                   id="ticket_number"
                   value={formData.ticket_number}
                   onChange={(e) => updateField("ticket_number", e.target.value)}
+                  required
                   data-testid="ticket-number-input"
                 />
               </div>
@@ -288,22 +301,24 @@ const CreateServiceOrder = () => {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="opening_date">Data de Abertura</Label>
+                <Label htmlFor="opening_date">Data de Abertura <span className="text-red-500">*</span></Label>
                 <Input
                   id="opening_date"
                   type="date"
                   value={formData.opening_date}
                   onChange={(e) => updateField("opening_date", e.target.value)}
+                  required
                   data-testid="opening-date-input"
                 />
               </div>
               <div>
-                <Label htmlFor="opening_time">Hora de Abertura</Label>
+                <Label htmlFor="opening_time">Hora de Abertura <span className="text-red-500">*</span></Label>
                 <Input
                   id="opening_time"
                   type="time"
                   value={formData.opening_time}
                   onChange={(e) => updateField("opening_time", e.target.value)}
+                  required
                   data-testid="opening-time-input"
                 />
               </div>
@@ -338,12 +353,16 @@ const CreateServiceOrder = () => {
               </div>
               <div>
                 <Label htmlFor="responsible_tech">Técnico Responsável</Label>
-                <Input
-                  id="responsible_tech"
-                  value={formData.responsible_tech}
-                  onChange={(e) => updateField("responsible_tech", e.target.value)}
-                  data-testid="responsible-tech-input"
-                />
+                <Select value={formData.responsible_tech} onValueChange={(value) => updateField("responsible_tech", value)}>
+                  <SelectTrigger data-testid="responsible-tech-select">
+                    <SelectValue placeholder="Selecione o técnico" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {technicians.map((tech) => (
+                      <SelectItem key={tech.id} value={tech.name}>{tech.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
@@ -353,11 +372,12 @@ const CreateServiceOrder = () => {
             <h2 className="text-lg font-semibold text-slate-800 mb-4">Dados do Cliente</h2>
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="client_name">Cliente</Label>
+                <Label htmlFor="client_name">Cliente <span className="text-red-500">*</span></Label>
                 <Input
                   id="client_name"
                   value={formData.client_name}
                   onChange={(e) => updateField("client_name", e.target.value)}
+                  required
                   data-testid="client-name-input"
                 />
               </div>
@@ -396,12 +416,13 @@ const CreateServiceOrder = () => {
             <h2 className="text-lg font-semibold text-slate-800 mb-4">Informações do Equipamento</h2>
             <div className="grid md:grid-cols-3 gap-4 mb-4">
               <div>
-                <Label htmlFor="equipment_type">Tipo de Equipamento</Label>
+                <Label htmlFor="equipment_type">Tipo de Equipamento <span className="text-red-500">*</span></Label>
                 <Input
                   id="equipment_type"
                   placeholder="Ex: IMPRESSORA"
                   value={formData.equipment_type}
                   onChange={(e) => updateField("equipment_type", e.target.value)}
+                  required
                   data-testid="equipment-type-input"
                 />
               </div>
