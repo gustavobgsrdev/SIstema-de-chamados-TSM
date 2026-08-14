@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { axiosInstance as axios } from "@/api/axios";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { ArrowLeft, Printer, Edit } from "lucide-react";
+import { ArrowLeft, Printer, Edit, FileDown } from "lucide-react";
 import "./ViewServiceOrder.css";
 
 const formatDate = (dateStr) => {
@@ -58,6 +58,24 @@ const ViewServiceOrder = () => {
     window.print();
   };
 
+  const handleGeneratePDF = async () => {
+    const html2pdf = (await import("html2pdf.js")).default;
+    const element = document.getElementById("print-content");
+    if (!element) return;
+
+    const ticketNum = order.ticket_number || "SN";
+    const osNum = order.os_number || "SN";
+    const filename = `CHAMADO ${ticketNum} - OS ${osNum}.pdf`;
+
+    html2pdf().set({
+      margin: [5, 5, 5, 5],
+      filename: filename,
+      image: { type: "jpeg", quality: 0.95 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    }).from(element).save();
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -107,6 +125,14 @@ const ViewServiceOrder = () => {
                 <Printer className="w-4 h-4 mr-2" />
                 Imprimir
               </Button>
+              <Button
+                onClick={handleGeneratePDF}
+                className="bg-green-600 hover:bg-green-700"
+                data-testid="generate-pdf-button"
+              >
+                <FileDown className="w-4 h-4 mr-2" />
+                Gerar PDF
+              </Button>
             </div>
           </div>
         </div>
@@ -114,7 +140,7 @@ const ViewServiceOrder = () => {
 
       {/* Print Content - Excel Layout */}
       <main className="container mx-auto px-6 py-8" data-testid="order-content">
-        <div className="bg-white print-container" style={{ maxWidth: '210mm', margin: '0 auto', padding: '10mm', fontSize: '10pt' }}>
+        <div id="print-content" className="bg-white print-container" style={{ maxWidth: '210mm', margin: '0 auto', padding: '10mm', fontSize: '10pt' }}>
           
           {/* Header with Logo */}
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '12px', borderBottom: '2px solid #000', paddingBottom: '8px' }}>
