@@ -37,6 +37,7 @@ const CreateServiceOrder = () => {
     ticket_number: "",
     os_number: "",
     pat: "",
+    order_type: "",
     status: "ABERTO",
     opening_date: "",
     opening_time: "",
@@ -281,6 +282,22 @@ const CreateServiceOrder = () => {
               </div>
             </div>
             <div className="grid md:grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="order_type">Tipo</Label>
+                <Select value={formData.order_type || ""} onValueChange={(value) => updateField("order_type", value)}>
+                  <SelectTrigger data-testid="order-type-select">
+                    <SelectValue placeholder="Selecione o tipo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Substituição">Substituição</SelectItem>
+                    <SelectItem value="Locação nova">Locação nova</SelectItem>
+                    <SelectItem value="Locação encerrada">Locação encerrada</SelectItem>
+                    <SelectItem value="Manutenção">Manutenção</SelectItem>
+                    <SelectItem value="Manutenção no local">Manutenção no local</SelectItem>
+                    <SelectItem value="Entrega">Entrega</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div>
                 <Label htmlFor="status">Situação</Label>
                 <Select value={formData.status} onValueChange={(value) => updateField("status", value)}>

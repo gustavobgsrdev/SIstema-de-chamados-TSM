@@ -79,6 +79,7 @@ class ServiceOrder(BaseModel):
     ticket_number: Optional[str] = None
     os_number: Optional[str] = None
     pat: Optional[str] = None
+    order_type: Optional[str] = None  # Substituição, Locação nova, etc.
     status: Optional[str] = "ABERTO"  # URGENTE, ABERTO, EM ROTA, LIBERADO, PENDENCIA, SUSPENSO, DEFINIR, RESOLVIDO, MANUTENÇÃO PREVENTIVA
     opening_date: Optional[str] = None
     opening_time: Optional[str] = None  # Hora de abertura
@@ -133,6 +134,7 @@ class ServiceOrderCreate(BaseModel):
     ticket_number: Optional[str] = None
     os_number: Optional[str] = None
     pat: Optional[str] = None
+    order_type: Optional[str] = None
     status: Optional[str] = "ABERTO"
     opening_date: Optional[str] = None
     opening_time: Optional[str] = None
@@ -164,6 +166,7 @@ class ServiceOrderUpdate(BaseModel):
     ticket_number: Optional[str] = None
     os_number: Optional[str] = None
     pat: Optional[str] = None
+    order_type: Optional[str] = None
     status: Optional[str] = None
     opening_date: Optional[str] = None
     opening_time: Optional[str] = None
@@ -568,7 +571,7 @@ async def get_service_orders(
 async def get_next_ticket_number(current_user: User = Depends(get_current_user)):
     """Get the next ticket number (auto-increment)"""
     pipeline = [
-        {"$match": {"ticket_number": {"$exists": True, "$ne": None, "$ne": ""}}},
+        {"$match": {"ticket_number": {"$exists": True, "$nin": [None, ""]}}},
         {"$addFields": {"ticket_num_int": {"$toInt": {"$ifNull": ["$ticket_number", "0"]}}}},
         {"$sort": {"ticket_num_int": -1}},
         {"$limit": 1},
