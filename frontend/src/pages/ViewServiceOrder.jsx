@@ -364,6 +364,22 @@ const ViewServiceOrder = () => {
             <p style={{ margin: 0 }}><strong>Declaração:</strong> Atesto que os serviços relacionados acima foram executados. Equipamento testado dentro e fora do sistema, funcionando perfeitamente.</p>
           </div>
 
+          {/* Anexos */}
+          {order.attachments && order.attachments.length > 0 && (
+            <div style={{ marginTop: '15px' }}>
+              <h3 style={{ fontSize: '9pt', fontWeight: 'bold', marginBottom: '5px', borderBottom: '1px solid #000', paddingBottom: '3px' }}>
+                Anexos ({order.attachments.length})
+              </h3>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '5px' }}>
+                {order.attachments.map((att) => (
+                  <div key={att.id} style={{ fontSize: '7pt', padding: '3px 6px', border: '1px solid #cbd5e1', borderRadius: '4px', backgroundColor: '#f8fafc' }}>
+                    {att.filename} {att.created_at ? `(${att.created_at})` : ""}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Signatures */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '20px' }}>
             <div>

@@ -520,6 +520,11 @@ const CreateServiceOrder = () => {
                 />
               </div>
             </div>
+            <div className="mt-4 p-3 bg-slate-50 rounded-lg border border-dashed border-slate-300">
+              <p className="text-sm text-slate-500">
+                Anexos (fotos, documentos) podem ser adicionados após criar o chamado, editando-o.
+              </p>
+            </div>
           </div>
 
           {/* Verificações */}

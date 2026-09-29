@@ -1,5 +1,6 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, UploadFile, File, Form
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, UploadFile, File, Form, Query
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.responses import Response
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -16,6 +17,7 @@ import base64
 from io import BytesIO
 from PIL import Image
 import asyncio
+from storage import init_storage, put_object, get_object
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -118,6 +120,9 @@ class ServiceOrder(BaseModel):
     
     # Observações
     observations: Optional[str] = None
+    
+    # Anexos
+    attachments: List[dict] = Field(default_factory=list)  # [{id, storage_path, filename, content_type, size}]
     
     # Assinaturas
     client_signature: Optional[str] = None
@@ -822,6 +827,70 @@ async def sign_service_order(
     return ServiceOrder(**updated_order)
 
 
+APP_NAME = "tsm-chamados"
+
+@api_router.post("/service-orders/{order_id}/upload")
+async def upload_file(
+    order_id: str,
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user)
+):
+    existing = await db.service_orders.find_one({"id": order_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Chamado não encontrado")
+    
+    ext = file.filename.split(".")[-1].lower() if "." in file.filename else "bin"
+    storage_path = f"{APP_NAME}/uploads/{order_id}/{uuid.uuid4()}.{ext}"
+    data = await file.read()
+    
+    result = put_object(storage_path, data, file.content_type or "application/octet-stream")
+    
+    attachment = {
+        "id": str(uuid.uuid4()),
+        "storage_path": result["path"],
+        "filename": file.filename,
+        "content_type": file.content_type or "application/octet-stream",
+        "size": result.get("size", len(data)),
+        "created_at": datetime.now(timezone(timedelta(hours=-3))).strftime("%d/%m/%Y %H:%M")
+    }
+    
+    await db.service_orders.update_one(
+        {"id": order_id},
+        {"$push": {"attachments": attachment}}
+    )
+    
+    return attachment
+
+
+@api_router.get("/files/{path:path}")
+async def download_file(
+    path: str,
+    auth: str = Query(None),
+    current_user: User = Depends(get_current_user)
+):
+    try:
+        data, content_type = get_object(path)
+        return Response(content=data, media_type=content_type)
+    except Exception:
+        raise HTTPException(status_code=404, detail="Arquivo não encontrado")
+
+
+@api_router.delete("/service-orders/{order_id}/attachments/{attachment_id}")
+async def delete_attachment(
+    order_id: str,
+    attachment_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    result = await db.service_orders.update_one(
+        {"id": order_id},
+        {"$pull": {"attachments": {"id": attachment_id}}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Anexo não encontrado")
+    return {"message": "Anexo removido"}
+
+
+
 
 @api_router.delete("/service-orders/{order_id}")
 async def delete_service_order(
@@ -884,6 +953,16 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+
+@app.on_event("startup")
+async def startup_event():
+    try:
+        init_storage()
+        logger.info("Object Storage inicializado")
+    except Exception as e:
+        logger.error(f"Falha ao inicializar Object Storage: {e}")
+
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
