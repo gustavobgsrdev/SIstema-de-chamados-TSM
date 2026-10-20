@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, Search, Eye, Edit, Trash2, LogOut, FileText, Users, Calendar, X, PenTool } from "lucide-react";
+import { Plus, Search, Eye, Edit, Trash2, LogOut, FileText, Users, Calendar, X, PenTool, Copy } from "lucide-react";
 
 const STATUS_COLORS = {
   "URGENTE": "bg-orange-100 text-orange-900 border-orange-500",
@@ -299,6 +299,53 @@ const Dashboard = () => {
       setPreventiveLoading(false);
     }
   };
+
+  const handleClone = async (order) => {
+    try {
+      const nextRes = await axios.get(`/service-orders/next-ticket`);
+      const newTicket = nextRes.data.next_ticket_number;
+
+      const cloneData = {
+        ticket_number: newTicket,
+        os_number: order.os_number || "",
+        pat: order.pat || "",
+        order_type: order.order_type || "",
+        status: "ABERTO",
+        opening_date: order.opening_date || "",
+        opening_time: order.opening_time || "",
+        service_date: "",
+        service_time: "",
+        responsible_opening: order.responsible_opening || "",
+        responsible_tech: order.responsible_tech || "",
+        phone: order.phone || "",
+        client_name: order.client_name || "",
+        unit: order.unit || "",
+        service_address: order.service_address || "",
+        equipment_type: order.equipment_type || "",
+        equipment_brand: order.equipment_brand || "",
+        equipment_model: order.equipment_model || "",
+        equipment_serial: order.equipment_serial || "",
+        equipment_board_serial: order.equipment_board_serial || "",
+        call_info: order.call_info || "",
+        materials: order.materials || "",
+        technical_report: order.technical_report || "",
+        total_page_count: order.total_page_count || "",
+        pending_issues: order.pending_issues || "",
+        next_visit: order.next_visit || "",
+        equipment_replaced: order.equipment_replaced || false,
+        observations: order.observations || "",
+        verification_mode: order.verification_mode || "DIGITAL",
+        verifications: order.verifications || []
+      };
+
+      await axios.post(`/service-orders`, cloneData);
+      toast.success(`Chamado clonado! Novo Nº: ${newTicket}`);
+      loadOrders();
+    } catch (error) {
+      toast.error("Erro ao clonar chamado");
+    }
+  };
+
 
   if (loading) {
     return (
@@ -672,6 +719,16 @@ const Dashboard = () => {
                     >
                       <PenTool className="w-4 h-4 mr-1" />
                       Assinar
+                    </Button>
+                    <Button
+                      onClick={() => handleClone(order)}
+                      variant="outline"
+                      size="sm"
+                      className="text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                      data-testid={`clone-button-${order.id}`}
+                    >
+                      <Copy className="w-4 h-4 mr-1" />
+                      Clonar
                     </Button>
                     <Button
                       onClick={() => handleDelete(order.id)}

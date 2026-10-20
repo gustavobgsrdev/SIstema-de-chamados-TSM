@@ -4,6 +4,7 @@ import { axiosInstance as axios } from "@/api/axios";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { ArrowLeft, Printer, Edit, FileDown } from "lucide-react";
+import FileUpload from "@/components/FileUpload";
 import "./ViewServiceOrder.css";
 
 const formatDate = (dateStr) => {
@@ -366,17 +367,16 @@ const ViewServiceOrder = () => {
 
           {/* Anexos */}
           {order.attachments && order.attachments.length > 0 && (
-            <div style={{ marginTop: '15px' }}>
-              <h3 style={{ fontSize: '9pt', fontWeight: 'bold', marginBottom: '5px', borderBottom: '1px solid #000', paddingBottom: '3px' }}>
+            <div style={{ marginTop: '15px' }} className="no-print">
+              <h3 style={{ fontSize: '11pt', fontWeight: 'bold', marginBottom: '8px', borderBottom: '1px solid #000', paddingBottom: '3px' }}>
                 Anexos ({order.attachments.length})
               </h3>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '5px' }}>
-                {order.attachments.map((att) => (
-                  <div key={att.id} style={{ fontSize: '7pt', padding: '3px 6px', border: '1px solid #cbd5e1', borderRadius: '4px', backgroundColor: '#f8fafc' }}>
-                    {att.filename} {att.created_at ? `(${att.created_at})` : ""}
-                  </div>
-                ))}
-              </div>
+              <FileUpload
+                orderId={id}
+                attachments={order.attachments}
+                onUpdate={loadOrder}
+                readOnly={true}
+              />
             </div>
           )}
 
