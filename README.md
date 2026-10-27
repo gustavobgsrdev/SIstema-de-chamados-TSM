@@ -153,7 +153,7 @@ pytest backend_test.py
 
 <div align="center">
 
-**TSM Printer Solutions**  
+**Gustavo Borges**  
 *Organização, agilidade e controle no atendimento técnico.*
 
 </div>
